@@ -29,6 +29,7 @@
         #define PAD_MINUS SDL_SCANCODE_KP_MINUS
 
         #define PADKEY key.keysym.scancode
+        #define MICEKEY button.button
     #endif
 
 #endif

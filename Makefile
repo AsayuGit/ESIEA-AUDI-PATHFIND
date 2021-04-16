@@ -9,7 +9,7 @@ CC = gcc
 WINCC = x86_64-w64-mingw32-gcc
 
 # Compile / Link Flags
-CFLAGS += -c -Wall
+CFLAGS += -c -Wall -std=c89
 LDFLAGS = $$(sdl2-config --libs) $$(xml2-config --libs) -lSDL2_image -lSDL2_mixer
 
 # Main target and filename of the executable
@@ -28,23 +28,31 @@ OBJ_DIR = $(call uniq, $(dir $(OBJ)))
 # List of all includes directory
 INCLUDES = $(patsubst %, -I %, $(call uniq, $(dir $(call rwildcard,,*.h)))) $$(sdl2-config --cflags) $$(xml2-config --cflags)
 
+# Number of therads available 
+CPUS = $(nproc)
+
+multi:
+	@$(MAKE) -j$(CPUS) -s all
+
 all: $(OBJ_DIR) $(OUT)
 
 $(OBJ_DIR):
-	mkdir -p $@
+	@mkdir -p $@
 
 $(BUILD_DIR)/%.o: %.c
 	@echo "Compiling $<"
-	$(CC) $(CFLAGS) $< $(INCLUDES) -o $@
+	@$(CC) $(CFLAGS) $< $(INCLUDES) -o $@
 
 $(OUT): $(OBJ)
-	@echo "Linking $<"
-	$(CC) -o $(OUT) $^ $(LDFLAGS)
+	@echo "Linking $@"
+	@$(CC) -o $(OUT) $^ $(LDFLAGS)
 
 clean:
-	rm -rf $(BUILD_DIR) $(OUT)
+	@echo "Cleaning Build"
+	@rm -rf $(BUILD_DIR) $(OUT)
 
-rebuild: clean all
+rebuild: clean
+	@$(MAKE) -j$(CPUS) -s all
 
 run:
 	./$(OUT)

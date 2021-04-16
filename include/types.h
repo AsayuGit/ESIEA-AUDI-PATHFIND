@@ -18,10 +18,12 @@
     } Vector2d;
 
     typedef struct{
+        char* TileMapPath;
         Surface* TileMapSurface;
         unsigned int MapSizeX;
         unsigned int MapSizeY;
         unsigned int MapSize;
+        Uint32 ColorKey;
     } TileMap;
 
     typedef struct{

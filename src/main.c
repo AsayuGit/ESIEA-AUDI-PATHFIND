@@ -15,9 +15,11 @@
 void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     /* Declaration */
     Map* WorldMap;
+    bool DebugMode;
 
     /* Init */
     InitDebug(DDevice);
+    DebugMode = false;
     
     WorldMap = LoadMap(DDevice, "Assets/WorldMaps/OverWorld.txt");
 
@@ -31,24 +33,35 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
             case SDL_QUIT:
                 goto Exit;
                 break;
+            default:
+                break;
             }
 
             /* Regular events */
             if (IDevice->EventEnabled){
                 switch (IDevice->event.type){
-                case SDL_QUIT:
-                    goto Exit;
-                    break;
+                case SDL_KEYDOWN:
+                    switch (IDevice->event.PADKEY)
+                    {
+                    case SDL_SCANCODE_ESCAPE:
+                        DebugMode = (DebugMode) ? false : true;
+                        break;
+                    default:
+                        break;
+                    }
+                break;
                 default:
                     break;
                 }
             }
-            DebugEvents(IDevice, WorldMap);
+            if (DebugMode)
+                DebugEvents(IDevice, WorldMap);
         }
         
         /* Draw World Map */ /* How about we put that in a buffer ? but that would make it static :/ */
         DisplayWorldMap(DDevice, WorldMap);
-        DisplayMapEditor(DDevice);
+        if (DebugMode)
+            DisplayMapEditor(DDevice);
         SDL_RenderPresent(DDevice->Renderer);
     }
     

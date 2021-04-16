@@ -4,5 +4,6 @@
     #include "types.h"
 
     Map* LoadMap(DisplayDevice* DDevice, char* MapFilePath);
-
+    void SaveMap(Map* MapToSave, char* MapFilePath);
+    
 #endif
