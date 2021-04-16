@@ -9,12 +9,16 @@
 #include "load.h"
 #include "graphics.h"
 #include "map.h"
+#include "debug.h"
+#include "keymap.h"
 
 void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     /* Declaration */
     Map* WorldMap;
 
     /* Init */
+    InitDebug(DDevice);
+    
     WorldMap = LoadMap(DDevice, "Assets/WorldMaps/OverWorld.txt");
 
     /* Main Game loop */
@@ -39,11 +43,12 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                     break;
                 }
             }
+            DebugEvents(IDevice, WorldMap);
         }
         
         /* Draw World Map */ /* How about we put that in a buffer ? but that would make it static :/ */
         DisplayWorldMap(DDevice, WorldMap);
-
+        DisplayMapEditor(DDevice);
         SDL_RenderPresent(DDevice->Renderer);
     }
     

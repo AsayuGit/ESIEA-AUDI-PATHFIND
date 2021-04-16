@@ -6,8 +6,6 @@
 
     typedef SDL_Texture Surface;
     #define SDL_HWSURFACE SDL_SWSURFACE
-    #define PADKEY event.key.keysym.scancode
-    #define P_PADKEY event->key.keysym.scancode
 
     typedef struct{
         int x;
@@ -22,6 +20,8 @@
     typedef struct{
         Surface* TileMapSurface;
         unsigned int MapSizeX;
+        unsigned int MapSizeY;
+        unsigned int MapSize;
     } TileMap;
 
     typedef struct{

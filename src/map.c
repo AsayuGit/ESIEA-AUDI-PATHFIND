@@ -20,7 +20,8 @@ Map* LoadMap(DisplayDevice* DDevice, char* MapFilePath){
     LoadedMap = (Map*)malloc(sizeof(Map));
 
     /* Logic */
-    fscanf(MapFile, "%u %u %u\n%x\n", &LoadedMap->MapSizeX, &LoadedMap->MapSizeY, &LoadedMap->MapTileMap.MapSizeX, &ColorKey);
+    fscanf(MapFile, "%u %u %u %u\n%x\n", &LoadedMap->MapSizeX, &LoadedMap->MapSizeY, &LoadedMap->MapTileMap.MapSizeX, &LoadedMap->MapTileMap.MapSizeY, &ColorKey);
+    LoadedMap->MapTileMap.MapSize = LoadedMap->MapTileMap.MapSizeX * (LoadedMap->MapTileMap.MapSizeY - 1);
     fgets(TileMapPath, PATH_MAX, MapFile);
 
     LoadedMap->MapTileMap.TileMapSurface = LoadSurface("Assets/Textures/TileMap/TileMap.bmp", DDevice, &ColorKey, false);
