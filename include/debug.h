@@ -4,7 +4,7 @@
     #include "types.h"
 
     void InitDebug(DisplayDevice* DDevice);
-    void DebugEvents(InputDevice* IDevice, Map* WorldMap);
+    void DebugEvents(DisplayDevice* DDevice, InputDevice* IDevice, Map* WorldMap);
     void DisplayMapEditor(DisplayDevice* DDevice);
 
 #endif

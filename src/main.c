@@ -55,7 +55,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                 }
             }
             if (DebugMode)
-                DebugEvents(IDevice, WorldMap);
+                DebugEvents(DDevice, IDevice, WorldMap);
         }
         
         /* Draw World Map */ /* How about we put that in a buffer ? but that would make it static :/ */

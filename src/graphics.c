@@ -11,8 +11,8 @@ void DrawTile(DisplayDevice* DDevice, TileMap* Map, unsigned int TileID, unsigne
     SrcTile.w = TILE_SIZE;
     SrcTile.h = TILE_SIZE;
 
-    DstTile.x = X * TILE_SIZE;
-    DstTile.y = Y * TILE_SIZE;
+    DstTile.x = X * TILE_SIZE - DDevice->Camera.x;
+    DstTile.y = Y * TILE_SIZE - DDevice->Camera.y;
     DstTile.w = TILE_SIZE;
     DstTile.h = TILE_SIZE;
     /* Logic */

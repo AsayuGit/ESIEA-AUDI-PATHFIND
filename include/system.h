@@ -9,5 +9,6 @@
     DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Title);
 
     void CreateSoundDevice();
+    void CenterCameraOn(DisplayDevice* DDevice, Map* WorldMap, int x, int y);
 
 #endif

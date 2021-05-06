@@ -1,7 +1,7 @@
 #include "system.h"
+#include "defines.h"
 
 #include <SDL2/SDL.h>
-
 #include <SDL2/SDL_mixer.h>
 
 void InitSDL(){
@@ -49,8 +49,8 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
         SDL_GL_SetSwapInterval(1); /* VSync */
     #endif
 
-    Device->ScreenResolution.x = ScreenWidth;
-    Device->ScreenResolution.y = ScreenHeight;
+    Device->ScreenResolution = InitVector2i(ScreenWidth, ScreenHeight);
+    Device->Camera = InitSDL_Rect(0, 0, ScreenWidth, ScreenHeight);
 
     return Device;
 }
@@ -62,4 +62,38 @@ void CreateSoundDevice(){
     }
     /* InitJukebox(); */ /* Countains all music to be played */
     /* return NULL; */
+}
+
+void BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region){
+    
+    if (DDevice->Camera.x + DDevice->Camera.w > Region.x + Region.w){
+        DDevice->Camera.x = Region.x + Region.w - DDevice->Camera.w;
+    }
+    if (DDevice->Camera.x < Region.x){
+        DDevice->Camera.x = Region.x;
+    }
+
+    if (DDevice->Camera.y + DDevice->Camera.h > Region.y + Region.h){
+        DDevice->Camera.y = Region.y + Region.h - DDevice->Camera.h;
+    }
+    if (DDevice->Camera.y < Region.y){
+        DDevice->Camera.y = Region.y;
+    }
+
+}
+
+void CenterCameraOn(DisplayDevice* DDevice, Map* WorldMap, int x, int y){
+    Vector2i CameraTileSize;
+    Vector2i NewCameraPos;
+
+    CameraTileSize = InitVector2i(DDevice->Camera.w / TILE_SIZE, DDevice->Camera.h / TILE_SIZE);
+    NewCameraPos = InitVector2i(
+        (x - (CameraTileSize.x >> 1)) * TILE_SIZE + (TILE_SIZE >> 1),
+        (y - (CameraTileSize.y >> 1)) * TILE_SIZE + (TILE_SIZE >> 1)
+    );
+
+    DDevice->Camera.x = NewCameraPos.x;
+    DDevice->Camera.y = NewCameraPos.y;
+
+    BoundCameraToRegion(DDevice, WorldMap->MapRegion);
 }

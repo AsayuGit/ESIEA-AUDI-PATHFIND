@@ -30,6 +30,7 @@
         unsigned int** MapData;
         unsigned int MapSizeX;
         unsigned int MapSizeY;
+        SDL_Rect MapRegion;
         TileMap MapTileMap;
     } Map;
 
@@ -37,6 +38,7 @@
         SDL_Window *Screen;
         SDL_Renderer *Renderer;
         Vector2i ScreenResolution;
+        SDL_Rect Camera;
     } DisplayDevice;
 
     typedef struct{
@@ -57,5 +59,8 @@
         SDL_Texture* FontTexture;
         unsigned int FontHeight;
     } BitmapFont;
+
+    Vector2i InitVector2i(int x, int y);
+    SDL_Rect InitSDL_Rect(int x, int y, int w, int h);
 
 #endif

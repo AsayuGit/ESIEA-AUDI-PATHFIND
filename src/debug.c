@@ -3,6 +3,7 @@
 #include "defines.h"
 #include "keymap.h"
 #include "map.h"
+#include "system.h"
 
 static Surface* UISurface;
 static SDL_Rect CursorSrcRect, CursorDstRect;
@@ -32,7 +33,7 @@ void InitDebug(DisplayDevice* DDevice){
     clipboard = 0;
 }
 
-void DebugEvents(InputDevice* IDevice, Map* WorldMap){
+void DebugEvents(DisplayDevice* DDevice, InputDevice* IDevice, Map* WorldMap){
     if (IDevice->EventEnabled){
         switch (IDevice->event.type){
         case SDL_KEYDOWN:
@@ -44,7 +45,7 @@ void DebugEvents(InputDevice* IDevice, Map* WorldMap){
                     CursorPos.x--;
                 break;
             case PAD_RIGHT:
-                if (CursorPos.x < WorldMap->MapSizeX)
+                if (CursorPos.x + 1 < WorldMap->MapSizeX)
                     CursorPos.x++;
                 break;
             case PAD_UP:
@@ -52,7 +53,7 @@ void DebugEvents(InputDevice* IDevice, Map* WorldMap){
                     CursorPos.y--;
                 break;
             case PAD_DOWN:
-                if (CursorPos.y < WorldMap->MapSizeY)
+                if (CursorPos.y + 1 < WorldMap->MapSizeY)
                     CursorPos.y++;
                 break;
             
@@ -116,11 +117,13 @@ void DebugEvents(InputDevice* IDevice, Map* WorldMap){
             break;
         }
     }
+
+    CenterCameraOn(DDevice, WorldMap, CursorPos.x, CursorPos.y);
 }
 
 void DisplayMapEditor(DisplayDevice* DDevice){
-    CursorDstRect.x = CursorPos.x * TILE_SIZE - 3;
-    CursorDstRect.y = CursorPos.y * TILE_SIZE - 3;
+    CursorDstRect.x = CursorPos.x * TILE_SIZE - 3 - DDevice->Camera.x;
+    CursorDstRect.y = CursorPos.y * TILE_SIZE - 3 - DDevice->Camera.y;
     CursorDstRect.w = 38;
     CursorDstRect.h = 38;
 

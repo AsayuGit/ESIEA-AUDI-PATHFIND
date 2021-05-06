@@ -41,6 +41,7 @@ Map* LoadMap(DisplayDevice* DDevice, char* MapFilePath){
         }
     }
 
+    LoadedMap->MapRegion = InitSDL_Rect(0, 0, LoadedMap->MapSizeX * TILE_SIZE, LoadedMap->MapSizeY * TILE_SIZE);
 
     /* free */
 Error:
