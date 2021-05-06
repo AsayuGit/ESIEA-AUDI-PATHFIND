@@ -44,14 +44,9 @@
     typedef struct{
         /* Events */
         SDL_Event event;
-        bool EventEnabled;
 
         /* Key Presses */
         const Uint8* KeyStates; /* Pointer to the keypresses */
-        
-        /* Joystick */
-        SDL_Joystick* Joy1; /* Pointers to the Joypad */
-        bool JoyEnabled;
     } InputDevice;
 
     typedef struct{

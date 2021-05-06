@@ -34,88 +34,86 @@ void InitDebug(DisplayDevice* DDevice){
 }
 
 void DebugEvents(DisplayDevice* DDevice, InputDevice* IDevice, Map* WorldMap){
-    if (IDevice->EventEnabled){
-        switch (IDevice->event.type){
-        case SDL_KEYDOWN:
-            switch (IDevice->event.PADKEY)
-            {
-            /* Move the cursor around */
-            case PAD_LEFT:
-                if (CursorPos.x > 0)
-                    CursorPos.x--;
-                break;
-            case PAD_RIGHT:
-                if (CursorPos.x + 1 < WorldMap->MapSizeX)
-                    CursorPos.x++;
-                break;
-            case PAD_UP:
-                if (CursorPos.y > 0)
-                    CursorPos.y--;
-                break;
-            case PAD_DOWN:
-                if (CursorPos.y + 1 < WorldMap->MapSizeY)
-                    CursorPos.y++;
-                break;
-            
-            /* Increment or decrement a tile */
-            case PAD_PLUS:
-                if (WorldMap->MapData[CursorPos.y][CursorPos.x] < WorldMap->MapTileMap.MapSize - 1)
-                    WorldMap->MapData[CursorPos.y][CursorPos.x]++;
-                printf("New Tile: %u\n", WorldMap->MapData[CursorPos.y][CursorPos.x]);
-                break;
-            case PAD_MINUS:
-                if (WorldMap->MapData[CursorPos.y][CursorPos.x] > 0)
-                    WorldMap->MapData[CursorPos.y][CursorPos.x]--;
-                printf("New Tile: %u\n", WorldMap->MapData[CursorPos.y][CursorPos.x]);
-                break;
-
-            /* Copy and paste */
-            case SDL_SCANCODE_C:
-                clipboard = WorldMap->MapData[CursorPos.y][CursorPos.x];
-                printf("Tile copied\n");
-                break;
-
-            case SDL_SCANCODE_V:
-                WorldMap->MapData[CursorPos.y][CursorPos.x] = clipboard;
-                printf("Tile pasted\n");
-                break;
-
-            /* Save changes */
-            case SDL_SCANCODE_F1:
-                SaveMap(WorldMap, "Assets/WorldMaps/OverWorld.txt");
-                printf("Map Saved !\n");
-                break;
-            default:
-                break;
-            }
+    switch (IDevice->event.type){
+    case SDL_KEYDOWN:
+        switch (IDevice->event.PADKEY)
+        {
+        /* Move the cursor around */
+        case PAD_LEFT:
+            if (CursorPos.x > 0)
+                CursorPos.x--;
             break;
-        case SDL_MOUSEBUTTONDOWN:
-            switch (IDevice->event.MICEKEY)
-            {
-            case SDL_BUTTON_LEFT:
-                CursorPos.x = IDevice->event.motion.x / 32;
-                CursorPos.y = IDevice->event.motion.y / 32;
-                break;
-            default:
-                break;
-            }
+        case PAD_RIGHT:
+            if (CursorPos.x + 1 < WorldMap->MapSizeX)
+                CursorPos.x++;
+            break;
+        case PAD_UP:
+            if (CursorPos.y > 0)
+                CursorPos.y--;
+            break;
+        case PAD_DOWN:
+            if (CursorPos.y + 1 < WorldMap->MapSizeY)
+                CursorPos.y++;
+            break;
+        
+        /* Increment or decrement a tile */
+        case PAD_PLUS:
+            if (WorldMap->MapData[CursorPos.y][CursorPos.x] < WorldMap->MapTileMap.MapSize - 1)
+                WorldMap->MapData[CursorPos.y][CursorPos.x]++;
+            printf("New Tile: %u\n", WorldMap->MapData[CursorPos.y][CursorPos.x]);
+            break;
+        case PAD_MINUS:
+            if (WorldMap->MapData[CursorPos.y][CursorPos.x] > 0)
+                WorldMap->MapData[CursorPos.y][CursorPos.x]--;
+            printf("New Tile: %u\n", WorldMap->MapData[CursorPos.y][CursorPos.x]);
             break;
 
-        case SDL_MOUSEWHEEL:
-            if (IDevice->event.wheel.y > 0){
-                if (WorldMap->MapData[CursorPos.y][CursorPos.x] < WorldMap->MapTileMap.MapSize - 1)
-                    WorldMap->MapData[CursorPos.y][CursorPos.x]++;
-                printf("New Tile: %u\n", WorldMap->MapData[CursorPos.y][CursorPos.x]);
-            } else if (IDevice->event.wheel.y < 0) {
-                if (WorldMap->MapData[CursorPos.y][CursorPos.x] > 0)
-                    WorldMap->MapData[CursorPos.y][CursorPos.x]--;
-                printf("New Tile: %u\n", WorldMap->MapData[CursorPos.y][CursorPos.x]);
-            }
+        /* Copy and paste */
+        case SDL_SCANCODE_C:
+            clipboard = WorldMap->MapData[CursorPos.y][CursorPos.x];
+            printf("Tile copied\n");
             break;
 
+        case SDL_SCANCODE_V:
+            WorldMap->MapData[CursorPos.y][CursorPos.x] = clipboard;
+            printf("Tile pasted\n");
+            break;
+
+        /* Save changes */
+        case SDL_SCANCODE_F1:
+            SaveMap(WorldMap, "Assets/WorldMaps/OverWorld.txt");
+            printf("Map Saved !\n");
+            break;
         default:
             break;
         }
+        break;
+    case SDL_MOUSEBUTTONDOWN:
+        switch (IDevice->event.MICEKEY)
+        {
+        case SDL_BUTTON_LEFT:
+            CursorPos.x = (IDevice->event.motion.x + DDevice->Camera.x) / TILE_SIZE;
+            CursorPos.y = (IDevice->event.motion.y + DDevice->Camera.y) / TILE_SIZE;
+            break;
+        default:
+            break;
+        }
+        break;
+
+    case SDL_MOUSEWHEEL:
+        if (IDevice->event.wheel.y > 0){
+            if (WorldMap->MapData[CursorPos.y][CursorPos.x] < WorldMap->MapTileMap.MapSize - 1)
+                WorldMap->MapData[CursorPos.y][CursorPos.x]++;
+            printf("New Tile: %u\n", WorldMap->MapData[CursorPos.y][CursorPos.x]);
+        } else if (IDevice->event.wheel.y < 0) {
+            if (WorldMap->MapData[CursorPos.y][CursorPos.x] > 0)
+                WorldMap->MapData[CursorPos.y][CursorPos.x]--;
+            printf("New Tile: %u\n", WorldMap->MapData[CursorPos.y][CursorPos.x]);
+        }
+        break;
+
+    default:
+        break;
     }
 
     CenterCameraOn(DDevice, WorldMap, CursorPos.x, CursorPos.y);

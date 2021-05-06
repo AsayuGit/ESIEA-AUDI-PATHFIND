@@ -13,16 +13,7 @@ void InitSDL(){
 
 InputDevice* InitInputs(bool JoyEnabled){
     InputDevice* Inputs = (InputDevice*)malloc(sizeof(InputDevice));
-    Inputs->Joy1 = NULL;
-    if (SDL_NumJoysticks() && JoyEnabled){
-        Inputs->Joy1 = SDL_JoystickOpen(0); /* Open Joystick */
-    }
     Inputs->KeyStates = SDL_GetKeyboardState(NULL); /* Open Keyboard */
-    if (Inputs->Joy1 == NULL){
-        Inputs->JoyEnabled = false;
-    }else{
-        Inputs->JoyEnabled = true;
-    }
     return Inputs;
 }
 
@@ -80,6 +71,17 @@ void BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region){
         DDevice->Camera.y = Region.y;
     }
 
+}
+
+Vector2i GetCameraPos(DisplayDevice* DDevice){
+    Vector2i CameraPos;
+
+    CameraPos = InitVector2i(
+        DDevice->Camera.x / TILE_SIZE,
+        DDevice->Camera.y / TILE_SIZE
+    );
+
+    return CameraPos;
 }
 
 void CenterCameraOn(DisplayDevice* DDevice, Map* WorldMap, int x, int y){

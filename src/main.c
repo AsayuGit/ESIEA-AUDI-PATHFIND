@@ -27,39 +27,31 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     while (true){
         /* Events Loop */
         while(SDL_PollEvent(&IDevice->event)){
-            /* Global events */
             switch (IDevice->event.type)
             {
             case SDL_QUIT:
                 goto Exit;
                 break;
-            default:
-                break;
-            }
 
-            /* Regular events */
-            if (IDevice->EventEnabled){
-                switch (IDevice->event.type){
-                case SDL_KEYDOWN:
-                    switch (IDevice->event.PADKEY)
-                    {
-                    case SDL_SCANCODE_ESCAPE:
-                        DebugMode = (DebugMode) ? false : true;
-                        break;
-                    default:
-                        break;
-                    }
-                break;
+            case SDL_KEYDOWN:
+                switch (IDevice->event.PADKEY)
+                {
+                case SDL_SCANCODE_ESCAPE:
+                    DebugMode = (DebugMode) ? false : true;
+                    break;
                 default:
                     break;
                 }
+            break;
+            default:
+                break;
             }
             if (DebugMode)
                 DebugEvents(DDevice, IDevice, WorldMap);
         }
         
-        /* Draw World Map */ /* How about we put that in a buffer ? but that would make it static :/ */
-        DisplayWorldMap(DDevice, WorldMap);
+        DisplayWorldMap(DDevice, WorldMap); /* Draw World Map */
+        DisplayCharacter(DDevice);          /* Draw the main character */
         if (DebugMode)
             DisplayMapEditor(DDevice);
         SDL_RenderPresent(DDevice->Renderer);
