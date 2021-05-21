@@ -25,7 +25,8 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     const Uint8* keyState;
     unsigned int IdleAnim = 0;
     Uint32 oldTime, frametime, newTime = 0;
-    Vector2i PlayerMapCoordinates;
+    Vector2i PlayerMapCoordinates = {0, 0};
+    double PlayerMove = 0.0f;
 
     /* Init */
     InitDebug(DDevice);
@@ -54,6 +55,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                 {
                 case SDL_SCANCODE_ESCAPE:
                     DebugMode = (DebugMode) ? false : true;
+                    SetDebugCursorPos(PlayerMapCoordinates);
                     break;
                 default:
                     break;
@@ -69,6 +71,8 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
         animSet = false;
         keyState = SDL_GetKeyboardState(&nbOfKeys);
         if (!DebugMode){
+            PlayerMove = HERO_SPEED * (frametime / SPEED_SCALE);
+
             if (keyState[SDL_SCANCODE_UP]){
                 if (!animSet){
                     CharacterPlayAnimation(MainCharacter, 4, false); 
@@ -76,7 +80,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                     CharaHandle->Flip = false;
                     IdleAnim = 1;
                 }
-                CharaHandle->Coordinates.y -= HERO_SPEED * (frametime / SPEED_SCALE);
+                nextValidPosition(&CharaHandle->Coordinates, WorldMap, 0, -PlayerMove);
             } else if (keyState[SDL_SCANCODE_DOWN]){
                 if (!animSet){
                     CharacterPlayAnimation(MainCharacter, 3, false); /* Down */
@@ -84,7 +88,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                     CharaHandle->Flip = false;
                     IdleAnim = 0;
                 }
-                CharaHandle->Coordinates.y += HERO_SPEED * (frametime / SPEED_SCALE);
+                nextValidPosition(&CharaHandle->Coordinates, WorldMap, 0, PlayerMove);
             } 
             
             if (keyState[SDL_SCANCODE_LEFT]){
@@ -94,7 +98,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                     CharaHandle->Flip = true;
                     IdleAnim = 2;
                 }
-                CharaHandle->Coordinates.x -= HERO_SPEED * (frametime / SPEED_SCALE);
+                nextValidPosition(&CharaHandle->Coordinates, WorldMap, -PlayerMove, 0);
             } else if (keyState[SDL_SCANCODE_RIGHT]){
                 if (!animSet){
                     CharacterPlayAnimation(MainCharacter, 5, false); /* Right */
@@ -102,7 +106,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                     CharaHandle->Flip = false;
                     IdleAnim = 2;
                 }
-                CharaHandle->Coordinates.x += HERO_SPEED * (frametime / SPEED_SCALE);
+                nextValidPosition(&CharaHandle->Coordinates, WorldMap, +PlayerMove, 0);
             } 
             
             if (!animSet){
@@ -118,8 +122,6 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
         if (WorldMap->MapData[PlayerMapCoordinates.y][PlayerMapCoordinates.x] == CHESTID){
             printf("Contgrats\n");
         }
-
-        printf("X=%f Y=%f\n", CharaHandle->Coordinates.x, CharaHandle->Coordinates.y);
 
         DisplayWorldMap(DDevice, WorldMap); /* Draw World Map */
         DisplayCharacterLayer(DDevice, CharaLayer);         /* Draw the main character */

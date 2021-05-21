@@ -1,14 +1,19 @@
 #include "map.h"
+
+#include <limits.h>
 #include "types.h"
 #include "defines.h"
 #include "Load.h"
+#include "system.h"
+
+void FreeMap(Map* MapToFree); /* FIXME */
 
 /* Load a map in memory from a file */
 Map* LoadMap(DisplayDevice* DDevice, char* MapFilePath){
     /* Declaration */
     Map* LoadedMap;
     FILE* MapFile;
-    unsigned int i, j;
+    unsigned int i, j, Buffer;
     char TileMapPath[PATH_MAX];
 
     /* Init */
@@ -42,6 +47,10 @@ Map* LoadMap(DisplayDevice* DDevice, char* MapFilePath){
     }
 
     LoadedMap->MapRegion = InitSDL_Rect(0, 0, LoadedMap->MapSizeX * TILE_SIZE, LoadedMap->MapSizeY * TILE_SIZE);
+
+    while (fscanf(MapFile, "%u", &Buffer) != EOF){
+        AddToIntLinkedList(&LoadedMap->forbiddenTiles, Buffer);
+    }
 
     /* free */
 Error:
@@ -83,4 +92,40 @@ Error:
         fclose(MapFile);
 }
 
-void FreeMap(Map* MapToFree);
+bool IsPosValid(Map* Worldmap, int X, int Y){
+    IntLinkedList* List;
+
+    List = Worldmap->forbiddenTiles;
+    
+    while (List){
+        if (Worldmap->MapData[Y][X] == List->data){
+            return false;
+        }
+        List = (IntLinkedList*)List->next;
+    }
+    return true;
+}
+
+void nextValidPosition(Vector2d* PlayerPos, Map* WorldMap, double deltaX, double deltaY){
+    Vector2i MapPlayerPos, NextMapPlayerPos;
+
+    MapPlayerPos.x = (int)(PlayerPos->x / TILE_SIZE);
+    MapPlayerPos.y = (int)(PlayerPos->y / TILE_SIZE);
+
+    NextMapPlayerPos.x = (int)((PlayerPos->x + deltaX) / TILE_SIZE);
+    NextMapPlayerPos.y = (int)((PlayerPos->y + deltaY) / TILE_SIZE);
+
+    if (IsPosValid(WorldMap, NextMapPlayerPos.x, MapPlayerPos.y)){
+        PlayerPos->x += deltaX;
+    } else {
+        /* snap to edge */
+    }
+
+    if (IsPosValid(WorldMap, MapPlayerPos.x, NextMapPlayerPos.y)){
+        PlayerPos->y += deltaY;
+    } else {
+        /* snap to edge */
+    }
+
+    BoundVect2dToRegion(PlayerPos, WorldMap->MapRegion);
+}

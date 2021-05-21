@@ -6,5 +6,6 @@
     void InitDebug(DisplayDevice* DDevice);
     void DebugEvents(DisplayDevice* DDevice, InputDevice* IDevice, Map* WorldMap);
     void DisplayMapEditor(DisplayDevice* DDevice);
+    void SetDebugCursorPos(Vector2i NewCursorPos);
 
 #endif

@@ -27,11 +27,17 @@
     } TileMap;
 
     typedef struct{
+        int data;
+        struct IntLinkedList* next;
+    }IntLinkedList;
+
+    typedef struct{
         unsigned int** MapData;
         unsigned int MapSizeX;
         unsigned int MapSizeY;
         SDL_Rect MapRegion;
         TileMap MapTileMap;
+        IntLinkedList* forbiddenTiles;
     } Map;
 
     typedef struct{
@@ -58,5 +64,6 @@
     Vector2i InitVector2i(int x, int y);
     Vector2d InitVector2d(double x, double y);
     SDL_Rect InitSDL_Rect(int x, int y, int w, int h);
+    void AddToIntLinkedList(IntLinkedList** List, int data);
 
 #endif

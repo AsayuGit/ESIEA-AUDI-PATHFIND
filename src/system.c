@@ -73,6 +73,22 @@ void BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region){
 
 }
 
+void BoundVect2dToRegion(Vector2d* Vect, SDL_Rect Region){
+    if (Vect->x > Region.x + Region.w){
+        Vect->x = Region.x + Region.w;
+    }
+    if (Vect->x < Region.x){
+        Vect->x = Region.x;
+    }
+
+    if (Vect->y > Region.y + Region.h){
+        Vect->y = Region.y + Region.h;
+    }
+    if (Vect->y < Region.y){
+        Vect->y = Region.y;
+    }
+}
+
 Vector2i GetCameraPos(DisplayDevice* DDevice){
     Vector2i CameraPos;
 

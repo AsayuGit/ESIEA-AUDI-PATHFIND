@@ -28,3 +28,15 @@ SDL_Rect InitSDL_Rect(int x, int y, int w, int h){
 
     return Return;
 }
+
+void AddToIntLinkedList(IntLinkedList** List, int data){
+    if (!List)
+        return;
+
+    while (*List){
+        List = (IntLinkedList**)&(*List)->next;
+    }
+    (*List) = (IntLinkedList*)malloc(sizeof(IntLinkedList));
+    (*List)->data = data;
+    (*List)->next = NULL;
+}

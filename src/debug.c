@@ -88,7 +88,7 @@ void DebugEvents(DisplayDevice* DDevice, InputDevice* IDevice, Map* WorldMap){
         case SDL_BUTTON_LEFT:
             CursorPos.x = (IDevice->event.motion.x + DDevice->Camera.x) / TILE_SIZE;
             CursorPos.y = (IDevice->event.motion.y + DDevice->Camera.y) / TILE_SIZE;
-            printf("Selected : X=%d Y=%d\n", CursorPos.x, CursorPos.y);
+            printf("Selected : X=%d Y=%d Type=%d\n", CursorPos.x, CursorPos.y, WorldMap->MapData[CursorPos.y][CursorPos.x]);
             break;
         default:
             break;
@@ -121,4 +121,8 @@ void DisplayMapEditor(DisplayDevice* DDevice){
     CursorDstRect.h = 38;
 
     SDL_RenderCopy(DDevice->Renderer, UISurface, &CursorSrcRect, &CursorDstRect);
+}
+
+void SetDebugCursorPos(Vector2i NewCursorPos){
+    CursorPos = NewCursorPos;
 }
