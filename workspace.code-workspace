@@ -6,7 +6,8 @@
 	],
 	"settings": {
 		"files.associations": {
-			"defines.h": "c"
+			"defines.h": "c",
+			"bitset": "c"
 		}
 	}
 }

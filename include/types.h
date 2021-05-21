@@ -32,6 +32,11 @@
     }IntLinkedList;
 
     typedef struct{
+        Vector2i data;
+        struct Vector2iLinkedList* next;
+    }Vector2iLinkedList;
+
+    typedef struct{
         unsigned int** MapData;
         unsigned int MapSizeX;
         unsigned int MapSizeY;
@@ -65,5 +70,7 @@
     Vector2d InitVector2d(double x, double y);
     SDL_Rect InitSDL_Rect(int x, int y, int w, int h);
     void AddToIntLinkedList(IntLinkedList** List, int data);
+    void AddToVector2iLinkedList(Vector2iLinkedList** List, Vector2i data);
+    void FreeVector2iLinkedList(Vector2iLinkedList* List);
 
 #endif

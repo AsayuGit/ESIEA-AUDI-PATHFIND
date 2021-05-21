@@ -10,7 +10,7 @@ WINCC = x86_64-w64-mingw32-gcc
 
 # Compile / Link Flags
 CFLAGS += -c -Wall -std=c89 -pedantic-errors -g
-LDFLAGS = $$(sdl2-config --libs) $$(xml2-config --libs) -lSDL2_image -lSDL2_mixer
+LDFLAGS = $$(sdl2-config --libs) $$(xml2-config --libs) -lSDL2_image -lSDL2_mixer -lm
 
 # Main target and filename of the executable
 OUT = AUDIRO

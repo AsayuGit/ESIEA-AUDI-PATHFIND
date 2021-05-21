@@ -40,3 +40,23 @@ void AddToIntLinkedList(IntLinkedList** List, int data){
     (*List)->data = data;
     (*List)->next = NULL;
 }
+
+
+void AddToVector2iLinkedList(Vector2iLinkedList** List, Vector2i data){
+    if (!List)
+        return;
+
+    while (*List){
+        List = (Vector2iLinkedList**)&(*List)->next;
+    }
+    (*List) = (Vector2iLinkedList*)malloc(sizeof(Vector2iLinkedList));
+    (*List)->data = data;
+    (*List)->next = NULL;
+}
+
+void FreeVector2iLinkedList(Vector2iLinkedList* List){
+    if (List){
+        FreeVector2iLinkedList((Vector2iLinkedList*)List->next);
+        free(List);
+    }
+}
