@@ -3,6 +3,7 @@
 #include <libxml2/libxml/parser.h>
 #include "Load.h"
 #include "system.h"
+#include "defines.h"
 
 Animation* ParseCHAnimation(xmlNode* array){
     Animation* LoadingAnimation;
@@ -92,7 +93,9 @@ Characters* InitCharacter(DisplayDevice* DDevice, char* CharacterPath){
     return LoadingCharacter;
 }
 
-void CharacterPlayAnimation(Characters* Character, int AnimationID){
+void CharacterPlayAnimation(Characters* Character, int AnimationID, bool Restart){
+    if ((Character->PlayingAnimation == AnimationID) && !Restart)
+        return;
     Character->PlayingAnimation = AnimationID;
     Character->CurrentFrame = 0;
 }
@@ -105,7 +108,7 @@ void InitCharacterLayer(DisplayDevice* DDevice, CharacterLayer** CharaLayer){
     }
 }
 
-void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, int TileID, bool Flip){  /* Add a new character to a CharacterLayer */
+void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, unsigned int X, unsigned int Y, bool Flip){  /* Add a new character to a CharacterLayer */
     CharacterList** CharaList;
 
     if (!CharaLayer)
@@ -118,7 +121,7 @@ void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, int 
     (*CharaList) = (CharacterList*)malloc(sizeof(CharacterList));
     (*CharaList)->Character = Character;
     (*CharaList)->NextCharacter = NULL;
-    /*(*CharaList)->Coordinates = BGContext->ScenesCoordinates[TileID];*/
+    (*CharaList)->Coordinates = InitVector2i(X * TILE_SIZE, Y * TILE_SIZE);
     (*CharaList)->Flip = Flip;
     (*CharaList)->Shown = true;
 }
@@ -145,7 +148,7 @@ void removeCharacterFromLayer(CharacterLayer* CharaLayer, const unsigned int cha
     }
 }
 
-void setCharacterVisibility(CharacterLayer* CharaLayer, const unsigned int charaInLayerID, bool Shown){
+void setCharacterProperty(CharacterLayer* CharaLayer, const unsigned int charaInLayerID, bool Shown, bool Flipped){
     CharacterList** CharaList;
     unsigned int i = 0;
 
@@ -161,6 +164,7 @@ void setCharacterVisibility(CharacterLayer* CharaLayer, const unsigned int chara
     }
     if (*CharaList){
         (*CharaList)->Shown = Shown;
+        (*CharaList)->Flip = Flipped;
     }
 }
 

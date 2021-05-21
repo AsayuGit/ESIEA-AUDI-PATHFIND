@@ -88,6 +88,7 @@ void DebugEvents(DisplayDevice* DDevice, InputDevice* IDevice, Map* WorldMap){
         case SDL_BUTTON_LEFT:
             CursorPos.x = (IDevice->event.motion.x + DDevice->Camera.x) / TILE_SIZE;
             CursorPos.y = (IDevice->event.motion.y + DDevice->Camera.y) / TILE_SIZE;
+            printf("Selected : X=%d Y=%d\n", CursorPos.x, CursorPos.y);
             break;
         default:
             break;
