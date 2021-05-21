@@ -1,7 +1,7 @@
 #include "map.h"
 #include "types.h"
 #include "defines.h"
-#include "load.h"
+#include "Load.h"
 
 /* Load a map in memory from a file */
 Map* LoadMap(DisplayDevice* DDevice, char* MapFilePath){
@@ -29,7 +29,7 @@ Map* LoadMap(DisplayDevice* DDevice, char* MapFilePath){
     LoadedMap->MapTileMap.TileMapPath = (char*)malloc(sizeof(char)*(strlen(TileMapPath) + 1));
     strcpy(LoadedMap->MapTileMap.TileMapPath, TileMapPath);
     
-    LoadedMap->MapTileMap.TileMapSurface = LoadSurface(LoadedMap->MapTileMap.TileMapPath, DDevice, &LoadedMap->MapTileMap.ColorKey, false);
+    LoadedMap->MapTileMap.TileMapSurface = LoadSurface(LoadedMap->MapTileMap.TileMapPath, DDevice, LoadedMap->MapTileMap.ColorKey, false);
     
     /* printf("Map size %u %u \n", LoadedMap->MapSizeX, LoadedMap->MapSizeY); */
     LoadedMap->MapData = (unsigned int**)malloc(sizeof(unsigned int*)*LoadedMap->MapSizeY);

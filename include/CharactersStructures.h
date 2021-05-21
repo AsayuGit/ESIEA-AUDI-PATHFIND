@@ -1,6 +1,20 @@
 #ifndef _CHARACTERSSTRUCTURES_H
 #define _CHARACTERSSTRUCTURES_H
 
+    #include "types.h"
+
+    typedef enum{
+        Phoenix_Wright,
+        Mia_Fey,
+        Miles_Edgeworth,
+        Judge,
+        Winston_Payne,
+        Court_Desk,
+        FrankShawit,
+        Defendant_Desk,
+        CharactersCount
+    } Cid;
+
     typedef struct{
         SDL_Rect SrcRect; /* Character source rect */
         SDL_Rect DstRect;       /* Character destination */
@@ -29,14 +43,14 @@
     typedef struct CharacterList_s{
         Characters* Character;
         Vector2i Coordinates;
-        char Flip;
+        bool Flip;
+        bool Shown;
         struct CharacterList_s* NextCharacter;
     } CharacterList;
 
     typedef struct {
         CharacterList * CharaList;
         SDL_Rect* Viewport;
-        char* Flipped;
     } CharacterLayer; /* "Context" */
 
 #endif

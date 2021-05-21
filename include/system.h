@@ -12,5 +12,6 @@
     void BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region);
     Vector2i GetCameraPos(DisplayDevice* DDevice);
     void CenterCameraOn(DisplayDevice* DDevice, Map* WorldMap, int x, int y);
-
+    char*    astrcpy(char** dst, char* src);
+    
 #endif

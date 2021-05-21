@@ -1,5 +1,5 @@
 #include "debug.h"
-#include "load.h"
+#include "Load.h"
 #include "defines.h"
 #include "keymap.h"
 #include "map.h"
@@ -13,14 +13,8 @@ static Vector2i CursorPos;
 unsigned int clipboard;
 
 void InitDebug(DisplayDevice* DDevice){
-    /* Declaration */
-    Uint32 ColorKey;
-
-    /* Init */
-    ColorKey = 0xff00ff;
-
     /* Logic */
-    UISurface = LoadSurface("Assets/Textures/Menus/UI.bmp", DDevice, &ColorKey, false);
+    UISurface = LoadSurface("Assets/Textures/Menus/UI.bmp", DDevice, 0xff00ff, SURFACE_KEYED);
     
     CursorSrcRect.x = 0;
     CursorSrcRect.y = 0;

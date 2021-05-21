@@ -31,7 +31,3 @@ void DisplayWorldMap(DisplayDevice* DDevice, Map* WorldMap){
         }
     }
 }
-
-void DisplayCharacter(DisplayDevice* DDevice){
-    
-}

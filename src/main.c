@@ -6,11 +6,12 @@
 #include <SDL2/SDL_mixer.h>
 
 #include "system.h"
-#include "load.h"
+#include "Load.h"
 #include "graphics.h"
 #include "map.h"
 #include "debug.h"
 #include "keymap.h"
+#include "Characters.h"
 
 void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     /* Declaration */
@@ -51,7 +52,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
         }
         
         DisplayWorldMap(DDevice, WorldMap); /* Draw World Map */
-        DisplayCharacter(DDevice);          /* Draw the main character */
+        /*DisplayCharacter(DDevice);*/          /* Draw the main character */
         if (DebugMode)
             DisplayMapEditor(DDevice);
         SDL_RenderPresent(DDevice->Renderer);

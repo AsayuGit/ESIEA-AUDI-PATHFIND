@@ -99,3 +99,13 @@ void CenterCameraOn(DisplayDevice* DDevice, Map* WorldMap, int x, int y){
 
     BoundCameraToRegion(DDevice, WorldMap->MapRegion);
 }
+
+char* astrcpy(char** dst, char* src){
+    size_t length;
+
+    length = strlen(src)+1;                     /* First we compute how long is the input string */
+    *dst = (char*)malloc(length*sizeof(char));   /* Then we allocate the right amount of memory */
+    memcpy(*dst, src, length);                  /* Finally we copy the content from the source to the destination */
+
+    return *dst;
+}
