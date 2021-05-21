@@ -4,27 +4,27 @@
     <animArray>
         <anim nbOfFrames="1" framerate="0"> <!-- Idle Front -->
             <src X="63" Y="6" W="16" H="32"/>
-            <dst X="8" Y="-11" W="16" H="32"/>
+            <dst X="-8" Y="-30" W="16" H="32"/>
         </anim>
         <anim nbOfFrames="1" framerate="0"> <!-- Idle Back -->
             <src X="63" Y="49" W="16" H="32"/>
-            <dst X="8" Y="-11" W="16" H="32"/>
+            <dst X="-8" Y="-30" W="16" H="32"/>
         </anim>
         <anim nbOfFrames="1" framerate="0"> <!-- Idle Side -->
             <src X="63" Y="89" W="16" H="32"/>
-            <dst X="8" Y="-11" W="16" H="32"/>
+            <dst X="-8" Y="-30" W="16" H="32"/>
         </anim>
         <anim nbOfFrames="6" framerate="125"> <!-- Walk Front -->
             <src X="92" Y="6" W="16" H="32"/>
-            <dst X="8" Y="-11" W="16" H="32"/>
+            <dst X="-8" Y="-30" W="16" H="32"/>
         </anim>
         <anim nbOfFrames="6" framerate="125"> <!-- Walk Back -->
             <src X="92" Y="49" W="16" H="32"/>
-            <dst X="8" Y="-11" W="16" H="32"/>
+            <dst X="-8" Y="-30" W="16" H="32"/>
         </anim>
         <anim nbOfFrames="6" framerate="125"> <!-- Walk Side -->
             <src X="92" Y="89" W="16" H="32"/>
-            <dst X="8" Y="-11" W="16" H="32"/>
+            <dst X="-8" Y="-30" W="16" H="32"/>
         </anim>
     </animArray>
 </character>

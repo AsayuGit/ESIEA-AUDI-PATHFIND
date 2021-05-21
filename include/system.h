@@ -11,7 +11,8 @@
     void CreateSoundDevice();
     void BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region);
     Vector2i GetCameraPos(DisplayDevice* DDevice);
-    void CenterCameraOn(DisplayDevice* DDevice, Map* WorldMap, int x, int y);
+    void CenterCameraOnTile(DisplayDevice* DDevice, Map* WorldMap, int x, int y);
+    void CenterCameraOnPlayer(DisplayDevice* DDevice, Map* WorldMap, Vector2d PlayerPosition);
     char*    astrcpy(char** dst, char* src);
     
 #endif

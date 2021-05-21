@@ -17,14 +17,15 @@
 void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     /* Declaration */
     Characters* MainCharacter = NULL;
+    CharacterList* CharaHandle = NULL;
     CharacterLayer* CharaLayer = NULL;
     Map* WorldMap = NULL;
-    bool DebugMode = false;
+    bool DebugMode = false, animSet = 0;
     int nbOfKeys;
     const Uint8* keyState;
-
     unsigned int IdleAnim = 0;
-    bool IdleFlip = false;
+    Uint32 oldTime, frametime, newTime = 0;
+    Vector2i PlayerMapCoordinates;
 
     /* Init */
     InitDebug(DDevice);
@@ -33,10 +34,13 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     MainCharacter = InitCharacter(DDevice, "Assets/Characters/MainCharacter.xml");
 
     InitCharacterLayer(DDevice, &CharaLayer);
-    AddCharacterToLayer(CharaLayer, MainCharacter, HERO_START_X, HERO_START_Y, false);
+    CharaHandle = AddCharacterToLayer(CharaLayer, MainCharacter, HERO_START_X, HERO_START_Y, false);
 
     /* Main Game loop */
     while (true){
+        oldTime = newTime;
+        newTime = SDL_GetTicks();
+        frametime = newTime - oldTime;
         /* Events Loop */
         while(SDL_PollEvent(&IDevice->event)){
             switch (IDevice->event.type)
@@ -62,32 +66,61 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                 DebugEvents(DDevice, IDevice, WorldMap);
         }
 
+        animSet = false;
         keyState = SDL_GetKeyboardState(&nbOfKeys);
-        if (keyState[SDL_SCANCODE_UP]){
-            CharacterPlayAnimation(MainCharacter, 4, false); /* Up */
-            setCharacterProperty(CharaLayer, 0, true, false);
-            IdleAnim = 1;
-            IdleFlip = false;
-        } else if (keyState[SDL_SCANCODE_DOWN]){
-            CharacterPlayAnimation(MainCharacter, 3, false); /* Down */
-            setCharacterProperty(CharaLayer, 0, true, false);
-            IdleAnim = 0;
-            IdleFlip = false;
-        } else if (keyState[SDL_SCANCODE_LEFT]){
-            CharacterPlayAnimation(MainCharacter, 5, false); /* Left */
-            setCharacterProperty(CharaLayer, 0, true, true);
-            IdleAnim = 2;
-            IdleFlip = true;
-        } else if (keyState[SDL_SCANCODE_RIGHT]){
-            CharacterPlayAnimation(MainCharacter, 5, false); /* Right */
-            setCharacterProperty(CharaLayer, 0, true, false);
-            IdleAnim = 2;
-            IdleFlip = false;
-        } else {
-            CharacterPlayAnimation(MainCharacter, IdleAnim, false); /* Idle */
-            setCharacterProperty(CharaLayer, 0, true, IdleFlip);
+        if (!DebugMode){
+            if (keyState[SDL_SCANCODE_UP]){
+                if (!animSet){
+                    CharacterPlayAnimation(MainCharacter, 4, false); 
+                    animSet = true;
+                    CharaHandle->Flip = false;
+                    IdleAnim = 1;
+                }
+                CharaHandle->Coordinates.y -= HERO_SPEED * (frametime / SPEED_SCALE);
+            } else if (keyState[SDL_SCANCODE_DOWN]){
+                if (!animSet){
+                    CharacterPlayAnimation(MainCharacter, 3, false); /* Down */
+                    animSet = true;
+                    CharaHandle->Flip = false;
+                    IdleAnim = 0;
+                }
+                CharaHandle->Coordinates.y += HERO_SPEED * (frametime / SPEED_SCALE);
+            } 
+            
+            if (keyState[SDL_SCANCODE_LEFT]){
+                if (!animSet){
+                    CharacterPlayAnimation(MainCharacter, 5, false); /* Left */
+                    animSet = true;
+                    CharaHandle->Flip = true;
+                    IdleAnim = 2;
+                }
+                CharaHandle->Coordinates.x -= HERO_SPEED * (frametime / SPEED_SCALE);
+            } else if (keyState[SDL_SCANCODE_RIGHT]){
+                if (!animSet){
+                    CharacterPlayAnimation(MainCharacter, 5, false); /* Right */
+                    animSet = true;
+                    CharaHandle->Flip = false;
+                    IdleAnim = 2;
+                }
+                CharaHandle->Coordinates.x += HERO_SPEED * (frametime / SPEED_SCALE);
+            } 
+            
+            if (!animSet){
+                CharacterPlayAnimation(MainCharacter, IdleAnim, false); /* Idle */
+                setCharacterProperty(CharaLayer, 0, true, CharaHandle->Flip);
+            }
+            CenterCameraOnPlayer(DDevice, WorldMap, CharaHandle->Coordinates);
         }
+
+        PlayerMapCoordinates.x = (int)(CharaHandle->Coordinates.x / TILE_SIZE);
+        PlayerMapCoordinates.y = (int)(CharaHandle->Coordinates.y / TILE_SIZE);
         
+        if (WorldMap->MapData[PlayerMapCoordinates.y][PlayerMapCoordinates.x] == CHESTID){
+            printf("Contgrats\n");
+        }
+
+        printf("X=%f Y=%f\n", CharaHandle->Coordinates.x, CharaHandle->Coordinates.y);
+
         DisplayWorldMap(DDevice, WorldMap); /* Draw World Map */
         DisplayCharacterLayer(DDevice, CharaLayer);         /* Draw the main character */
         if (DebugMode)

@@ -108,11 +108,11 @@ void InitCharacterLayer(DisplayDevice* DDevice, CharacterLayer** CharaLayer){
     }
 }
 
-void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, unsigned int X, unsigned int Y, bool Flip){  /* Add a new character to a CharacterLayer */
+CharacterList* AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, unsigned int X, unsigned int Y, bool Flip){  /* Add a new character to a CharacterLayer */
     CharacterList** CharaList;
 
     if (!CharaLayer)
-        return; /* error */
+        return NULL; /* error */
     CharaList = &(CharaLayer->CharaList);
     
     while ((*CharaList) != NULL){
@@ -121,9 +121,11 @@ void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, unsi
     (*CharaList) = (CharacterList*)malloc(sizeof(CharacterList));
     (*CharaList)->Character = Character;
     (*CharaList)->NextCharacter = NULL;
-    (*CharaList)->Coordinates = InitVector2i(X * TILE_SIZE, Y * TILE_SIZE);
+    (*CharaList)->Coordinates = InitVector2d(X * TILE_SIZE + (TILE_SIZE >> 1), Y * TILE_SIZE + (TILE_SIZE >> 1));
     (*CharaList)->Flip = Flip;
     (*CharaList)->Shown = true;
+
+    return (*CharaList);
 }
 
 void removeCharacterFromLayer(CharacterLayer* CharaLayer, const unsigned int charaInLayerID){
@@ -168,7 +170,7 @@ void setCharacterProperty(CharacterLayer* CharaLayer, const unsigned int charaIn
     }
 }
 
-void DisplayCharacter(DisplayDevice* DDevice, Characters* Character, SDL_Rect Viewport, Vector2i Coordinates, char Flip){ /* Display "A" Character on screen  */
+void DisplayCharacter(DisplayDevice* DDevice, Characters* Character, SDL_Rect Viewport, Vector2d Coordinates, char Flip){ /* Display "A" Character on screen  */
     SDL_Rect SpriteWindow, SpriteLayer;
 
     /* On veille a ne pas dépacer le nombre de frames de l'animation */

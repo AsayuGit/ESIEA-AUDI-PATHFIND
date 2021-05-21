@@ -56,6 +56,7 @@
     } BitmapFont;
 
     Vector2i InitVector2i(int x, int y);
+    Vector2d InitVector2d(double x, double y);
     SDL_Rect InitSDL_Rect(int x, int y, int w, int h);
 
 #endif

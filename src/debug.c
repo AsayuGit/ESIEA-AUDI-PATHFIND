@@ -111,7 +111,7 @@ void DebugEvents(DisplayDevice* DDevice, InputDevice* IDevice, Map* WorldMap){
         break;
     }
 
-    CenterCameraOn(DDevice, WorldMap, CursorPos.x, CursorPos.y);
+    CenterCameraOnTile(DDevice, WorldMap, CursorPos.x, CursorPos.y);
 }
 
 void DisplayMapEditor(DisplayDevice* DDevice){

@@ -84,7 +84,7 @@ Vector2i GetCameraPos(DisplayDevice* DDevice){
     return CameraPos;
 }
 
-void CenterCameraOn(DisplayDevice* DDevice, Map* WorldMap, int x, int y){
+void CenterCameraOnTile(DisplayDevice* DDevice, Map* WorldMap, int x, int y){
     Vector2i CameraTileSize;
     Vector2i NewCameraPos;
 
@@ -96,6 +96,14 @@ void CenterCameraOn(DisplayDevice* DDevice, Map* WorldMap, int x, int y){
 
     DDevice->Camera.x = NewCameraPos.x;
     DDevice->Camera.y = NewCameraPos.y;
+
+    BoundCameraToRegion(DDevice, WorldMap->MapRegion);
+}
+
+void CenterCameraOnPlayer(DisplayDevice* DDevice, Map* WorldMap, Vector2d PlayerPosition){
+
+    DDevice->Camera.x = PlayerPosition.x - (DDevice->ScreenResolution.x >> 1);
+    DDevice->Camera.y = PlayerPosition.y - (DDevice->ScreenResolution.y >> 1);
 
     BoundCameraToRegion(DDevice, WorldMap->MapRegion);
 }

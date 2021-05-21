@@ -42,7 +42,7 @@
 
     typedef struct CharacterList_s{
         Characters* Character;
-        Vector2i Coordinates;
+        Vector2d Coordinates;
         bool Flip;
         bool Shown;
         struct CharacterList_s* NextCharacter;
