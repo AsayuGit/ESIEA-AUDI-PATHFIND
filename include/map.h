@@ -10,5 +10,6 @@
     void nextValidPosition(Vector2d* PlayerPos, Map* WorldMap, double deltaX, double deltaY);
     void setPath(Vector2iLinkedList* Path);
     bool WallOnPath(Vector2d* PlayerPosition, double PlayerSpeed, CharacterList* CharaHandle);
+    Vector2iLinkedList* FindPotentialChestLocations(Map* WorldMap);
     
 #endif

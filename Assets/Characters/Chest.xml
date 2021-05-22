@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<character texture="./Assets/Textures/TileMap/TileMap.bmp" colorKey="0xff00ff">
+    <name>Nyan</name>
+    <animArray>
+        <anim nbOfFrames="1" framerate="0"> <!-- Just Chest -->
+            <src X="0" Y="0" W="32" H="32"/>
+            <dst X="0" Y="0" W="32" H="32"/>
+        </anim>
+    </animArray>
+</character>

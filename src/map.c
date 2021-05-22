@@ -69,6 +69,7 @@ void SaveMap(Map* MapToSave, char* MapFilePath){
     /* Declaration */
     FILE* MapFile;
     unsigned int i, j;
+    IntLinkedList* FBTiles;
 
     /* Init */
     MapFile = fopen(MapFilePath, "w");
@@ -89,6 +90,13 @@ void SaveMap(Map* MapToSave, char* MapFilePath){
         }
         fprintf(MapFile, "\n");
     }
+
+    FBTiles = MapToSave->forbiddenTiles;
+    while (FBTiles){
+        fprintf(MapFile, "%d ", FBTiles->data);
+        FBTiles = (IntLinkedList*)FBTiles->next;
+    }
+    fprintf(MapFile, "\n");
 
     /* free */
 Error:
@@ -187,4 +195,19 @@ bool WallOnPath(Vector2d* PlayerPosition, double PlayerSpeed, CharacterList* Cha
         return false;
     }
     return true;
+}
+
+Vector2iLinkedList* FindPotentialChestLocations(Map* WorldMap){
+    Vector2iLinkedList* potentialChestLocations = NULL;
+    unsigned int X, Y;
+
+    for (Y = 0; Y < WorldMap->MapSizeY; Y++){
+        for (X = 0; X < WorldMap->MapSizeX; X++){
+            if (WorldMap->MapData[Y][X] == 91){
+                AddToVector2iLinkedList(&potentialChestLocations, InitVector2i(X, Y));
+            }
+        }
+    }
+
+    return potentialChestLocations;
 }

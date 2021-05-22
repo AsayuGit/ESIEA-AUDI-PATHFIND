@@ -14,6 +14,7 @@
 #include "Characters.h"
 #include "defines.h"
 #include "aStar.h"
+#include "time.h"
 
 enum {
     MainMode,
@@ -24,7 +25,9 @@ enum {
 void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     /* Declaration */
     Characters* MainCharacter = NULL;
+    Characters* Chest = NULL;
     CharacterList* CharaHandle = NULL;
+    CharacterList* ChestHandle[4];
     CharacterLayer* CharaLayer = NULL;
     Map* WorldMap = NULL;
     bool animSet = 0;
@@ -32,19 +35,49 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     const Uint8* keyState;
     unsigned int IdleAnim = 0;
     Uint32 oldTime, frametime, newTime = 0;
-    Vector2i PlayerMapCoordinates = {0, 0};
+    Vector2i PlayerMapCoordinates = {HERO_START_X, HERO_START_Y};
     double PlayerMove = 0.0f;
     Vector2iLinkedList* path = NULL;
+    Vector2iLinkedList* potentialChest = NULL;
+    Vector2iLinkedList* potentialChestIterator = NULL;
+    unsigned int nbOfPotentialChests = 0;
+    unsigned int nextChest, currentChest;
     unsigned char EventMode = MainMode;
+    unsigned char i;
+    
+    srand(time(NULL));
 
     /* Init */
     InitDebug(DDevice);
     
     WorldMap = LoadMap(DDevice, "Assets/WorldMaps/OverWorld.txt");
     MainCharacter = InitCharacter(DDevice, "Assets/Characters/MainCharacter.xml");
+    Chest = InitCharacter(DDevice, "Assets/Characters/Chest.xml");
 
     InitCharacterLayer(DDevice, &CharaLayer);
-    CharaHandle = AddCharacterToLayer(CharaLayer, MainCharacter, HERO_START_X, HERO_START_Y, false);
+
+    potentialChest = FindPotentialChestLocations(WorldMap);
+    potentialChestIterator = potentialChest;
+    while (potentialChestIterator){
+        nbOfPotentialChests++;
+        potentialChestIterator = (Vector2iLinkedList*)potentialChestIterator->next;
+    }
+    potentialChestIterator = potentialChest;
+
+    /* Chests generation */
+    for (i = 0; i < 4; i++){
+            nextChest = rand()%nbOfPotentialChests;
+            currentChest = 0;
+            while (currentChest != nextChest){
+                potentialChestIterator = (Vector2iLinkedList*)potentialChestIterator->next;
+                if (!potentialChestIterator)
+                    potentialChestIterator = potentialChest;
+                currentChest++;
+            }
+        ChestHandle[i] = AddCharacterToLayer(CharaLayer, Chest, potentialChestIterator->data.x * TILE_SIZE, potentialChestIterator->data.y  * TILE_SIZE, false);
+    }
+
+    CharaHandle = AddCharacterToLayer(CharaLayer, MainCharacter, HERO_START_X * TILE_SIZE + (TILE_SIZE >> 1), HERO_START_Y  * TILE_SIZE + (TILE_SIZE >> 1), false);
 
     /* Main Game loop */
     while (true){
@@ -63,7 +96,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                 switch (IDevice->event.PADKEY)
                 {
                 case SDL_SCANCODE_ESCAPE:
-                    EventMode = (EventMode = DebugMode) ? MainMode : DebugMode;
+                    EventMode = (EventMode == DebugMode) ? MainMode : DebugMode;
                     SetDebugCursorPos(PlayerMapCoordinates);
                     break;
                 case SDL_SCANCODE_SPACE:
@@ -72,7 +105,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                         FreeVector2iLinkedList(path);
                         path = NULL;
                     }
-                    path = getPath(WorldMap, InitVector2i(HERO_START_X, HERO_START_Y), InitVector2i(16, 4));
+                    path = getPath(WorldMap, PlayerMapCoordinates, InitVector2i(16, 4));
                     setPath(path);
                     EventMode = AStarMode;
                     break;
@@ -83,7 +116,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
             default:
                 break;
             }
-            if (DebugMode)
+            if (EventMode == DebugMode)
                 DebugEvents(DDevice, IDevice, WorldMap);
         }
 
@@ -153,7 +186,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
 
         DisplayWorldMap(DDevice, WorldMap); /* Draw World Map */
         DisplayCharacterLayer(DDevice, CharaLayer);         /* Draw the main character */
-        if (DebugMode)
+        if (EventMode == DebugMode)
             DisplayMapEditor(DDevice);
         SDL_RenderPresent(DDevice->Renderer);
     }

@@ -7,6 +7,8 @@
     #define HERO_SPEED 2.5f
     #define SPEED_SCALE (1000.0f / TILE_SIZE)
     #define CHESTID 0
-    /*#define PATH_MAX 100*/
+    #ifndef PATH_MAX
+        #define PATH_MAX 100
+    #endif
 
 #endif

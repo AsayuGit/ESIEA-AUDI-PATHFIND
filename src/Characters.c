@@ -108,7 +108,7 @@ void InitCharacterLayer(DisplayDevice* DDevice, CharacterLayer** CharaLayer){
     }
 }
 
-CharacterList* AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, unsigned int X, unsigned int Y, bool Flip){  /* Add a new character to a CharacterLayer */
+CharacterList* AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, double X, double Y, bool Flip){  /* Add a new character to a CharacterLayer */
     CharacterList** CharaList;
 
     if (!CharaLayer)
@@ -121,7 +121,7 @@ CharacterList* AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Chara
     (*CharaList) = (CharacterList*)malloc(sizeof(CharacterList));
     (*CharaList)->Character = Character;
     (*CharaList)->NextCharacter = NULL;
-    (*CharaList)->Coordinates = InitVector2d(X * TILE_SIZE + (TILE_SIZE >> 1), Y * TILE_SIZE + (TILE_SIZE >> 1));
+    (*CharaList)->Coordinates = InitVector2d(X, Y);
     (*CharaList)->Flip = Flip;
     (*CharaList)->Shown = true;
 

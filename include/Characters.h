@@ -8,7 +8,7 @@
 
     /* Character Layer Management */
     void InitCharacterLayer(DisplayDevice* DDevice, CharacterLayer** CharaLayer);
-    CharacterList* AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, unsigned int X, unsigned int Y, bool Flip);
+    CharacterList* AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, double X, double Y, bool Flip);
     void removeCharacterFromLayer(CharacterLayer* CharaLayer, const unsigned int charaInLayerID);
     void setCharacterProperty(CharacterLayer* CharaLayer, const unsigned int charaInLayerID, bool Shown, bool Flipped);
     
