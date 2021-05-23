@@ -45,7 +45,7 @@ SDL_Texture* CreateTargetSurface(DisplayDevice* DDevice, int w, int h){
     return LoadingSurface;
 }
 
-Mix_Music* LoadMusic(char FilePath[]){
+Mix_Music* LoadMusic(const char FilePath[]){
     Mix_Music* LoadingMusic = NULL;
 
     if (FilePath){

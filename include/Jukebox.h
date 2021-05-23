@@ -11,7 +11,7 @@
         NumberOfEffectTracks
     } EffectsPlaylistID;
 
-    extern char* EffectPath[NumberOfEffectTracks];
+    extern const char* EffectPath[NumberOfEffectTracks];
 
     void PlayTrackID(MusicPlaylistID TrackID);
     void MusicDaemon(void);

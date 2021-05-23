@@ -4,11 +4,11 @@
 
 #include "Load.h"
 
-char* MusicPath[NumberOfMusicTracks][2] = {
+const char* MusicPath[NumberOfMusicTracks][2] = {
     {"Assets/Audio/Music/BGM_INTRO.wav", "Assets/Audio/Music/BGM_LOOP.wav"}
 };
 
-char* EffectPath[NumberOfEffectTracks] = {
+const char* EffectPath[NumberOfEffectTracks] = {
     "Assets/Audio/SFX/Yeah.wav"
 };
 

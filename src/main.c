@@ -114,7 +114,7 @@ BEGIN:
                             pathArray[i] = getPath(WorldMap, PlayerMapCoordinates, ChestArray[i]);
                         }
                         
-                        setPath(pathArray[0]);
+                        setPath(GetShortestEuclidianPath(pathArray, 4));
                         EventMode = AStarMode;
                         break;
                     

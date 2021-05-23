@@ -11,5 +11,7 @@
     void setPath(Vector2iLinkedList* Path);
     bool WallOnPath(Vector2d* PlayerPosition, double PlayerSpeed, CharacterList* CharaHandle);
     unsigned int FindPotentialChestLocations(Map* WorldMap, Vector2i** potentialChestLocation);
+    Vector2iLinkedList* GetShortestPath(Vector2iLinkedList** pathArray, unsigned int nbOfPaths);
+    Vector2iLinkedList* GetShortestEuclidianPath(Vector2iLinkedList** pathArray, unsigned int nbOfPaths);
     
 #endif

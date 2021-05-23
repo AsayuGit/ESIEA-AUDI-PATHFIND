@@ -24,7 +24,7 @@
 
     SDL_Texture* CreateTargetSurface(DisplayDevice* DDevice, int w, int h);
 
-    Mix_Music* LoadMusic(char FilePath[]);
+    Mix_Music* LoadMusic(const char FilePath[]);
     Mix_Chunk* LoadSoundEffect(char FilePath[]);
 
     xmlDoc* loadXml(char* filePath);

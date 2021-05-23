@@ -225,3 +225,71 @@ unsigned int FindPotentialChestLocations(Map* WorldMap, Vector2i** potentialChes
 
     return nbOfPotentialChestLocation;
 }
+
+unsigned int GetPathLength(Vector2iLinkedList* path){
+    Vector2iLinkedList* pathIterator;
+    unsigned int length = 0;
+
+    pathIterator = path;
+    while (pathIterator){
+        pathIterator = (Vector2iLinkedList*)pathIterator->next;
+        length++;
+    }
+    
+    return length;
+}
+
+Vector2iLinkedList* GetShortestPath(Vector2iLinkedList** pathArray, unsigned int nbOfPaths){
+    unsigned int i, currentPathLength, minPathLength, minPathIndex = 0;
+
+    minPathLength = GetPathLength(pathArray[0]);
+    for (i = 1; i < nbOfPaths; i++){
+        currentPathLength = GetPathLength(pathArray[i]);
+        if (currentPathLength < minPathLength){
+            minPathLength = currentPathLength;
+            minPathIndex = i;
+        }
+    }
+
+    return pathArray[minPathIndex];
+}
+
+double GetEuclidianDistance(Vector2i Start, Vector2i End){
+    Vector2i distance;
+
+    distance.x = End.x - Start.x;
+    distance.y = End.y - Start.y;
+
+    return sqrt((distance.x*distance.x) + (distance.y*distance.y));
+}
+
+double GetEuclidianPathLength(Vector2iLinkedList* path){
+    Vector2iLinkedList* lastNode;
+    double length = 0.0f;
+    
+    if (path){
+        do {
+            lastNode = path;
+            path = (Vector2iLinkedList*)path->next;
+            length += GetEuclidianDistance(lastNode->data, path->data);
+        } while (path->next);
+    }
+
+    return length;
+}
+
+Vector2iLinkedList* GetShortestEuclidianPath(Vector2iLinkedList** pathArray, unsigned int nbOfPaths){
+    unsigned int i, minPathIndex = 0;
+    double currentPathLength, minPathLength;
+
+    minPathLength = GetEuclidianPathLength(pathArray[0]);
+    for (i = 1; i < nbOfPaths; i++){
+        currentPathLength = GetEuclidianPathLength(pathArray[i]);
+        if (currentPathLength < minPathLength){
+            minPathLength = currentPathLength;
+            minPathIndex = i;
+        }
+    }
+
+    return pathArray[minPathIndex];
+}
