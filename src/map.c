@@ -197,17 +197,29 @@ bool WallOnPath(Vector2d* PlayerPosition, double PlayerSpeed, CharacterList* Cha
     return true;
 }
 
-Vector2iLinkedList* FindPotentialChestLocations(Map* WorldMap){
-    Vector2iLinkedList* potentialChestLocations = NULL;
-    unsigned int X, Y;
+unsigned int FindPotentialChestLocations(Map* WorldMap, Vector2i** potentialChestLocation){
+    Vector2iLinkedList* potentialChestLocationsList = NULL;
+    Vector2iLinkedList* potentialChestLocationsListPointer;
+    unsigned int X, Y, nbOfPotentialChestLocation = 0;
 
     for (Y = 0; Y < WorldMap->MapSizeY; Y++){
         for (X = 0; X < WorldMap->MapSizeX; X++){
             if (WorldMap->MapData[Y][X] == 91){
-                AddToVector2iLinkedList(&potentialChestLocations, InitVector2i(X, Y));
+                AddToVector2iLinkedList(&potentialChestLocationsList, InitVector2i(X, Y));
+                nbOfPotentialChestLocation++;
             }
         }
     }
 
-    return potentialChestLocations;
+    (*potentialChestLocation) = (Vector2i*)malloc(nbOfPotentialChestLocation*sizeof(Vector2i));
+    potentialChestLocationsListPointer = potentialChestLocationsList;
+
+    for (X = 0; X < nbOfPotentialChestLocation; X++){
+        (*potentialChestLocation)[X] = potentialChestLocationsListPointer->data;
+        potentialChestLocationsListPointer = (Vector2iLinkedList*)potentialChestLocationsListPointer->next;
+    }
+
+    FreeVector2iLinkedList(potentialChestLocationsList);
+
+    return nbOfPotentialChestLocation;
 }

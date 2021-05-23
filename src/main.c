@@ -38,12 +38,12 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     Vector2i PlayerMapCoordinates = {HERO_START_X, HERO_START_Y};
     double PlayerMove = 0.0f;
     Vector2iLinkedList* path = NULL;
-    Vector2iLinkedList* potentialChest = NULL;
-    Vector2iLinkedList* potentialChestIterator = NULL;
+    Vector2i* potentialChest = NULL;
+    Vector2i ChestArray[4];
     unsigned int nbOfPotentialChests = 0;
-    unsigned int nextChest, currentChest;
     unsigned char EventMode = MainMode;
     unsigned char i;
+    unsigned int nextChest;
     
     srand(time(NULL));
 
@@ -56,25 +56,14 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
 
     InitCharacterLayer(DDevice, &CharaLayer);
 
-    potentialChest = FindPotentialChestLocations(WorldMap);
-    potentialChestIterator = potentialChest;
-    while (potentialChestIterator){
-        nbOfPotentialChests++;
-        potentialChestIterator = (Vector2iLinkedList*)potentialChestIterator->next;
-    }
-    potentialChestIterator = potentialChest;
+    nbOfPotentialChests = FindPotentialChestLocations(WorldMap, &potentialChest);
 
     /* Chests generation */
     for (i = 0; i < 4; i++){
-            nextChest = rand()%nbOfPotentialChests;
-            currentChest = 0;
-            while (currentChest != nextChest){
-                potentialChestIterator = (Vector2iLinkedList*)potentialChestIterator->next;
-                if (!potentialChestIterator)
-                    potentialChestIterator = potentialChest;
-                currentChest++;
-            }
-        ChestHandle[i] = AddCharacterToLayer(CharaLayer, Chest, potentialChestIterator->data.x * TILE_SIZE, potentialChestIterator->data.y  * TILE_SIZE, false);
+        nextChest = rand()%nbOfPotentialChests;
+        ChestHandle[i] = AddCharacterToLayer(CharaLayer, Chest, potentialChest[nextChest].x * TILE_SIZE, potentialChest[nextChest].y * TILE_SIZE, false);
+        ChestArray[i] = potentialChest[nextChest];
+        /*printf("NYAN %d %d\n", ChestArray[i].x, ChestArray[i].y);*/
     }
 
     CharaHandle = AddCharacterToLayer(CharaLayer, MainCharacter, HERO_START_X * TILE_SIZE + (TILE_SIZE >> 1), HERO_START_Y  * TILE_SIZE + (TILE_SIZE >> 1), false);
@@ -180,8 +169,13 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
         PlayerMapCoordinates.x = (int)(CharaHandle->Coordinates.x / TILE_SIZE);
         PlayerMapCoordinates.y = (int)(CharaHandle->Coordinates.y / TILE_SIZE);
         
-        if (WorldMap->MapData[PlayerMapCoordinates.y][PlayerMapCoordinates.x] == CHESTID){
-            printf("Contgrats\n");
+
+        /* Chest Colosions */
+        for (i = 0; i < 4; i++){
+            if ((ChestArray[i].x == PlayerMapCoordinates.x) && (ChestArray[i].y == PlayerMapCoordinates.y)){
+                printf("Contgrats\n");
+                break;
+            }
         }
 
         DisplayWorldMap(DDevice, WorldMap); /* Draw World Map */
