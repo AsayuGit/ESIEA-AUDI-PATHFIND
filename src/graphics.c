@@ -31,3 +31,15 @@ void DisplayWorldMap(DisplayDevice* DDevice, Map* WorldMap){
         }
     }
 }
+
+unsigned int BiggestRectMultiple(SDL_Rect* ParentRect, SDL_Rect* ChildRect){
+    return MIN(ParentRect->w / ChildRect->w, ParentRect->h / ChildRect->h);
+}
+
+void ScaleToBiggestRectMultiple(SDL_Rect* ParentRect, SDL_Rect* ChildRect){
+    unsigned int biggestMultiple;
+
+    biggestMultiple = BiggestRectMultiple(ParentRect, ChildRect);
+    ChildRect->w *= biggestMultiple;
+    ChildRect->h *= biggestMultiple;
+}

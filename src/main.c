@@ -27,6 +27,7 @@ enum {
 void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     /* Declaration */
     SDL_Texture* CongratsTexture = NULL;
+    SDL_Rect CongratsTextureDstRect;
     Mix_Chunk* Yeah = NULL;
 
     CharacterLayer* CharaLayer = NULL;
@@ -56,6 +57,12 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     InitCharacterLayer(DDevice, &ChestLayer);
     
     CongratsTexture = LoadSurface("Assets/Textures/Menus/Congrats.bmp", DDevice, 0xff00ff, SURFACE_KEYED);
+    SDL_QueryTexture(CongratsTexture, NULL, NULL, &CongratsTextureDstRect.w, &CongratsTextureDstRect.h);
+
+    ScaleToBiggestRectMultiple(&DDevice->Camera, &CongratsTextureDstRect);
+    CongratsTextureDstRect.x = (DDevice->Camera.w - CongratsTextureDstRect.w) >> 1;
+    CongratsTextureDstRect.y = (DDevice->Camera.h - CongratsTextureDstRect.h) >> 1;
+
     WorldMap = LoadMap(DDevice, "Assets/WorldMaps/OverWorld.txt");
     MainCharacter = InitCharacter(DDevice, "Assets/Characters/MainCharacter.xml");
     Chest = InitCharacter(DDevice, "Assets/Characters/Chest.xml");
@@ -222,7 +229,7 @@ BEGIN:
         if (EventMode == DebugMode)
             DisplayMapEditor(DDevice);
         if (EventMode == VictoryMode)
-            SDL_RenderCopy(DDevice->Renderer, CongratsTexture, NULL, NULL);
+            SDL_RenderCopy(DDevice->Renderer, CongratsTexture, NULL, &CongratsTextureDstRect);
         SDL_RenderPresent(DDevice->Renderer);
     }
     
