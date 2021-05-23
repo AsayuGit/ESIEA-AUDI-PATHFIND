@@ -3,6 +3,7 @@
         "limits.h": "c",
         "types.h": "c",
         "jukebox.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "defines.h": "c"
     }
 }

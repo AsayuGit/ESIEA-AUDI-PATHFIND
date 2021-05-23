@@ -20,6 +20,7 @@
 
 #include "graphics.h"
 #include "defines.h"
+#include "system.h"
 
 void DrawTile(DisplayDevice* DDevice, TileMap* Map, unsigned int TileID, unsigned int X, unsigned int Y){
     /* Declaration */
@@ -37,7 +38,7 @@ void DrawTile(DisplayDevice* DDevice, TileMap* Map, unsigned int TileID, unsigne
     DstTile.h = TILE_SIZE;
     /* Logic */
 
-    SDL_RenderCopy(DDevice->Renderer, Map->TileMapSurface, &SrcTile, &DstTile);
+    ScaledDraw(DDevice, Map->TileMapSurface, &SrcTile, &DstTile);
 }
 
 void DisplayWorldMap(DisplayDevice* DDevice, Map* WorldMap){
@@ -62,4 +63,36 @@ void ScaleToBiggestRectMultiple(SDL_Rect* ParentRect, SDL_Rect* ChildRect){
     biggestMultiple = BiggestRectMultiple(ParentRect, ChildRect);
     ChildRect->w *= biggestMultiple;
     ChildRect->h *= biggestMultiple;
+}
+
+bool RectOnRect(const SDL_Rect* SrcRect, const SDL_Rect* DstRect){
+    if ((SrcRect->x + SrcRect->w) < DstRect->x)
+        return false;
+    if (SrcRect->x > (DstRect->x + DstRect->w))
+        return false;
+    if ((SrcRect->y + SrcRect->h) < DstRect->y)
+        return false;
+    if (SrcRect->y > (DstRect->y + DstRect->h))
+        return false;
+    return true;
+}
+
+bool RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect){
+    const SDL_Rect BaseRect = {0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y};
+
+    return RectOnRect(Rect, &BaseRect);
+}
+
+void DrawFrame(DisplayDevice* DDevice){
+    #ifdef _SDL
+        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[0], 0x000000);
+        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[1], 0x000000);
+        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[2], 0x000000);
+        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[3], 0x000000);
+    #else
+        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[0]);
+        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[1]);
+        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[2]);
+        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[3]);
+    #endif
 }

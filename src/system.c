@@ -25,6 +25,7 @@
 #include <SDL2/SDL_mixer.h>
 
 #include "Jukebox.h"
+#include "graphics.h"
 
 void InitSDL(){
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
@@ -39,6 +40,33 @@ InputDevice* InitInputs(bool JoyEnabled){
     return Inputs;
 }
 
+void UpdateResolution(DisplayDevice* DDevice){
+    int ScreenWidth, ScreenHeight;
+
+    #ifdef _SDL
+        ScreenWidth = DDevice->Screen->w;
+        ScreenHeight = DDevice->Screen->h;
+    #else
+        SDL_GetWindowSize(DDevice->Screen, &ScreenWidth, &ScreenHeight);
+    #endif
+
+    DDevice->IRScalar = MAX(MIN(ScreenWidth / BASE_RESOLUTION_X, ScreenHeight / BASE_RESOLUTION_Y), 1);
+
+    DDevice->ScreenResolution.x = ScreenWidth;
+    DDevice->ScreenResolution.y = ScreenHeight;
+
+    DDevice->InternalResolution.w = BASE_RESOLUTION_X * DDevice->IRScalar;
+    DDevice->InternalResolution.h = BASE_RESOLUTION_Y * DDevice->IRScalar;
+
+    DDevice->InternalResolution.x = (DDevice->ScreenResolution.x - DDevice->InternalResolution.w) >> 1;
+    DDevice->InternalResolution.y = (DDevice->ScreenResolution.y - DDevice->InternalResolution.h) >> 1;
+
+    DDevice->Frame[0] = InitRect(0, 0, DDevice->InternalResolution.x, ScreenHeight);                                                                                                            /* Left Frame */
+    DDevice->Frame[1] = InitRect(DDevice->InternalResolution.x + DDevice->InternalResolution.w, 0, DDevice->InternalResolution.x, ScreenHeight);                                                /* Right Frame */
+    DDevice->Frame[2] = InitRect(DDevice->InternalResolution.x, 0, DDevice->InternalResolution.w, DDevice->InternalResolution.y);                                                               /* Top Frame */
+    DDevice->Frame[3] = InitRect(DDevice->InternalResolution.x, DDevice->InternalResolution.y + DDevice->InternalResolution.h, DDevice->InternalResolution.w, DDevice->InternalResolution.y);   /* Bottom Frame */
+}
+
 DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Title){
     DisplayDevice* Device = (DisplayDevice*)malloc(sizeof(DisplayDevice));
     
@@ -47,7 +75,7 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
         SDL_WM_SetCaption(Title, NULL);
 	    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); /* VSync */
     #else
-        Device->Screen = SDL_CreateWindow(Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ScreenWidth, ScreenHeight, SDL_WINDOW_SHOWN);
+        Device->Screen = SDL_CreateWindow(Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ScreenWidth, ScreenHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     #endif
     if (Device->Screen == NULL){
         fprintf(stderr, "Can't create main window\n - %s\n", SDL_GetError());
@@ -63,7 +91,9 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
     #endif
 
     Device->ScreenResolution = InitVector2i(ScreenWidth, ScreenHeight);
-    Device->Camera = InitSDL_Rect(0, 0, ScreenWidth, ScreenHeight);
+    Device->Camera = InitSDL_Rect(0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y);
+
+    UpdateResolution(Device);
 
     return Device;
 }
@@ -138,8 +168,8 @@ void CenterCameraOnTile(DisplayDevice* DDevice, Map* WorldMap, int x, int y){
 
 void CenterCameraOnPlayer(DisplayDevice* DDevice, Map* WorldMap, Vector2d PlayerPosition){
 
-    DDevice->Camera.x = PlayerPosition.x - (DDevice->ScreenResolution.x >> 1);
-    DDevice->Camera.y = PlayerPosition.y - (DDevice->ScreenResolution.y >> 1);
+    DDevice->Camera.x = PlayerPosition.x - (DDevice->Camera.w >> 1);
+    DDevice->Camera.y = PlayerPosition.y - (DDevice->Camera.h >> 1);
 
     BoundCameraToRegion(DDevice, WorldMap->MapRegion);
 }
@@ -152,4 +182,106 @@ char* astrcpy(char** dst, char* src){
     memcpy(*dst, src, length);                  /* Finally we copy the content from the source to the destination */
 
     return *dst;
+}
+
+int DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
+	#ifdef _SDL
+        FlipBlitSurface(texture, srcrect, DDevice->Renderer, dstrect, flip);
+        return 0;
+    #else
+        return SDL_RenderCopyEx(DDevice->Renderer, texture, srcrect, dstrect, 0, 0, flip);
+    #endif
+}
+
+int Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
+    return DrawEx(DDevice, texture, srcrect, dstrect, 0);
+}
+
+int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
+    SDL_Rect ScaledDstRect = {0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y};
+    #ifdef _SDL
+        SDL_Rect ScaledSrcRect;
+    #endif
+
+
+    if (texture && RectOnScreen(DDevice, dstrect)){
+        
+        #ifdef _SDL
+            if (srcrect){
+                ScaledSrcRect = InitRect(
+                    (srcrect->x * DDevice->IRScalar) + DDevice->InternalResolution.x,
+                    (srcrect->y * DDevice->IRScalar) + DDevice->InternalResolution.y,
+                    srcrect->w * DDevice->IRScalar,
+                    srcrect->h * DDevice->IRScalar
+                );
+            }
+        #endif
+
+        if (dstrect){
+            ScaledDstRect = InitRect(
+                (dstrect->x * DDevice->IRScalar) + DDevice->InternalResolution.x,
+                (dstrect->y * DDevice->IRScalar) + DDevice->InternalResolution.y,
+                dstrect->w * DDevice->IRScalar,
+                dstrect->h * DDevice->IRScalar
+            );
+        }
+        #ifdef _SDL
+            return DrawEx(DDevice, texture, &ScaledSrcRect, &ScaledDstRect, flip);
+        #else
+            return DrawEx(DDevice, texture, srcrect, &ScaledDstRect, flip);
+        #endif
+    }
+    return 0;
+}
+
+int ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
+    return ScaledDrawEx(DDevice, texture, srcrect, dstrect, false);
+}
+
+void SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
+    switch (IDevice->event.type){
+        case SDL_WINDOWEVENT:
+            switch (IDevice->event.window.event)
+            {
+            case SDL_WINDOWEVENT_RESIZED:
+                UpdateResolution(DDevice);
+                break;
+            
+            default:
+                break;
+            }
+            break;
+
+        case SDL_KEYDOWN:
+            switch (IDevice->event.key.keysym.scancode)
+            {
+            
+            case SDL_SCANCODE_F:
+                printf("NYAN\n");
+                SDL_SetWindowFullscreen(DDevice->Screen, (SDL_GetWindowFlags(DDevice->Screen) & SDL_WINDOW_FULLSCREEN_DESKTOP) ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+                break;
+
+            case SDL_SCANCODE_F1:
+                SDL_SetWindowSize(DDevice->Screen, BASE_RESOLUTION_X * DDevice->IRScalar, BASE_RESOLUTION_Y * DDevice->IRScalar);
+                UpdateResolution(DDevice);
+                break;
+
+            default:
+                break;
+            }
+            break;
+
+        default:
+            break;
+    }
+
+}
+
+void FinishFrame(DisplayDevice* DDevice){
+    DrawFrame(DDevice);
+    #ifdef _SDL
+        SDL_Flip(DDevice->Screen);
+    #else
+        SDL_RenderPresent(DDevice->Renderer);
+    #endif
 }

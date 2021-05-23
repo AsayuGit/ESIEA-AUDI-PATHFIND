@@ -21,6 +21,8 @@
 #ifndef _DEFINES_H
 #define _DEFINES_H
 
+    #define BASE_RESOLUTION_X 640
+    #define BASE_RESOLUTION_Y 480
     #define TILE_SIZE 32
     #define HERO_START_X 5
     #define HERO_START_Y 2

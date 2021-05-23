@@ -215,8 +215,7 @@ void DisplayCharacter(DisplayDevice* DDevice, Characters* Character, SDL_Rect Vi
     SpriteLayer.x = Character->Anim[Character->PlayingAnimation].DstRect.x  + Coordinates.x - Viewport.x,
     SpriteLayer.y = Character->Anim[Character->PlayingAnimation].DstRect.y + Coordinates.y - Viewport.y,
 
-    /*ScaledDrawEx(DDevice, Character->Surface, &SpriteWindow, &SpriteLayer, Flip);*/
-    SDL_RenderCopyEx(DDevice->Renderer, Character->Surface, &SpriteWindow, &SpriteLayer, 0, 0, Flip);
+    ScaledDrawEx(DDevice, Character->Surface, &SpriteWindow, &SpriteLayer, Flip);
     
     if (SDL_GetTicks() > Character->LastFrame + Character->Anim[Character->PlayingAnimation].Framerate){
         Character->LastFrame = SDL_GetTicks();

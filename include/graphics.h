@@ -27,5 +27,8 @@
     void DisplayWorldMap(DisplayDevice* DDevice, Map* WorldMap);
     unsigned int BiggestRectMultiple(SDL_Rect* ParentRect, SDL_Rect* ChildRect);
     void ScaleToBiggestRectMultiple(SDL_Rect* ParentRect, SDL_Rect* ChildRect);
+    bool RectOnRect(const SDL_Rect* SrcRect, const SDL_Rect* DstRect);
+    bool RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect);
+    void DrawFrame(DisplayDevice* DDevice);
     
 #endif

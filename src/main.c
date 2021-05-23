@@ -115,6 +115,8 @@ BEGIN:
         frametime = newTime - oldTime;
         /* Events Loop */
         while(SDL_PollEvent(&IDevice->event)){
+            SystemEvents(DDevice, IDevice);
+
             switch (IDevice->event.type)
             {
             case SDL_QUIT:
@@ -249,8 +251,8 @@ BEGIN:
         if (EventMode == DebugMode)
             DisplayMapEditor(DDevice);
         if (EventMode == VictoryMode)
-            SDL_RenderCopy(DDevice->Renderer, CongratsTexture, NULL, &CongratsTextureDstRect);
-        SDL_RenderPresent(DDevice->Renderer);
+            ScaledDraw(DDevice, CongratsTexture, NULL, &CongratsTextureDstRect);
+        FinishFrame(DDevice);
     }
     
 Exit:
@@ -265,7 +267,7 @@ int main(int argc, char* argv[]){
     
     /* Init */
     InitSDL();
-    DDevice = CreateDisplayDevice(640, 480, "Audi RO");
+    DDevice = CreateDisplayDevice(640*2, 480*2, "Audi RO");
     IDevice = InitInputs(false);
     CreateSoundDevice();
     

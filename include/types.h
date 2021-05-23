@@ -68,7 +68,10 @@
     typedef struct{
         SDL_Window *Screen;
         SDL_Renderer *Renderer;
+        SDL_Rect Frame[4];
+        SDL_Rect InternalResolution;
         Vector2i ScreenResolution;
+        unsigned int IRScalar;
         SDL_Rect Camera;
     } DisplayDevice;
 
@@ -86,6 +89,7 @@
         unsigned int FontHeight;
     } BitmapFont;
 
+    SDL_Rect InitRect(int x, int y, int w, int h);
     Vector2i InitVector2i(int x, int y);
     Vector2d InitVector2d(double x, double y);
     SDL_Rect InitSDL_Rect(int x, int y, int w, int h);

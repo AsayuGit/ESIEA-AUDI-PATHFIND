@@ -35,5 +35,11 @@
     void CenterCameraOnTile(DisplayDevice* DDevice, Map* WorldMap, int x, int y);
     void CenterCameraOnPlayer(DisplayDevice* DDevice, Map* WorldMap, Vector2d PlayerPosition);
     char*    astrcpy(char** dst, char* src);
+    int DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);
+    int Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect);
+    int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);
+    int ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect);
+    void SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice);
+    void FinishFrame(DisplayDevice* DDevice);
     
 #endif
