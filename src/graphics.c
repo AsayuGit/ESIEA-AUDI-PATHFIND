@@ -84,15 +84,8 @@ bool RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect){
 }
 
 void DrawFrame(DisplayDevice* DDevice){
-    #ifdef _SDL
-        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[0], 0x000000);
-        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[1], 0x000000);
-        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[2], 0x000000);
-        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[3], 0x000000);
-    #else
-        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[0]);
-        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[1]);
-        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[2]);
-        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[3]);
-    #endif
+    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[0]);
+    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[1]);
+    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[2]);
+    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[3]);
 }

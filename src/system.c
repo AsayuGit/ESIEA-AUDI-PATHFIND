@@ -43,12 +43,7 @@ InputDevice* InitInputs(bool JoyEnabled){
 void UpdateResolution(DisplayDevice* DDevice){
     int ScreenWidth, ScreenHeight;
 
-    #ifdef _SDL
-        ScreenWidth = DDevice->Screen->w;
-        ScreenHeight = DDevice->Screen->h;
-    #else
-        SDL_GetWindowSize(DDevice->Screen, &ScreenWidth, &ScreenHeight);
-    #endif
+    SDL_GetWindowSize(DDevice->Screen, &ScreenWidth, &ScreenHeight);
 
     DDevice->IRScalar = MAX(MIN(ScreenWidth / BASE_RESOLUTION_X, ScreenHeight / BASE_RESOLUTION_Y), 1);
 
@@ -69,26 +64,20 @@ void UpdateResolution(DisplayDevice* DDevice){
 
 DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Title){
     DisplayDevice* Device = (DisplayDevice*)malloc(sizeof(DisplayDevice));
-    
-    #ifdef _SDL
-        Device->Screen = SDL_SetVideoMode(ScreenWidth, ScreenHeight, 32, SDL_HWSURFACE); /* | SDL_RESIZABLE */
-        SDL_WM_SetCaption(Title, NULL);
-	    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); /* VSync */
-    #else
-        Device->Screen = SDL_CreateWindow(Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ScreenWidth, ScreenHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    #endif
+
+    Device->Screen = SDL_CreateWindow(Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ScreenWidth, ScreenHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+
     if (Device->Screen == NULL){
         fprintf(stderr, "Can't create main window\n - %s\n", SDL_GetError());
         exit(-1);
     }
-    #ifndef _SDL
-        Device->Renderer = SDL_CreateRenderer(Device->Screen , -1, 0);
-        if (Device->Renderer == NULL){
-            fprintf(stderr, "Can't create main renderer\n - %s\n", SDL_GetError());
-            exit(-1);
-        }
-        SDL_GL_SetSwapInterval(1); /* VSync */
-    #endif
+
+    Device->Renderer = SDL_CreateRenderer(Device->Screen , -1, 0);
+    if (Device->Renderer == NULL){
+        fprintf(stderr, "Can't create main renderer\n - %s\n", SDL_GetError());
+        exit(-1);
+    }
+    SDL_GL_SetSwapInterval(1); /* VSync */
 
     Device->ScreenResolution = InitVector2i(ScreenWidth, ScreenHeight);
     Device->Camera = InitSDL_Rect(0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y);
@@ -185,12 +174,7 @@ char* astrcpy(char** dst, char* src){
 }
 
 int DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
-	#ifdef _SDL
-        FlipBlitSurface(texture, srcrect, DDevice->Renderer, dstrect, flip);
-        return 0;
-    #else
-        return SDL_RenderCopyEx(DDevice->Renderer, texture, srcrect, dstrect, 0, 0, flip);
-    #endif
+    return SDL_RenderCopyEx(DDevice->Renderer, texture, srcrect, dstrect, 0, 0, flip);
 }
 
 int Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
@@ -199,23 +183,8 @@ int Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, 
 
 int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
     SDL_Rect ScaledDstRect = {0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y};
-    #ifdef _SDL
-        SDL_Rect ScaledSrcRect;
-    #endif
-
 
     if (texture && RectOnScreen(DDevice, dstrect)){
-        
-        #ifdef _SDL
-            if (srcrect){
-                ScaledSrcRect = InitRect(
-                    (srcrect->x * DDevice->IRScalar) + DDevice->InternalResolution.x,
-                    (srcrect->y * DDevice->IRScalar) + DDevice->InternalResolution.y,
-                    srcrect->w * DDevice->IRScalar,
-                    srcrect->h * DDevice->IRScalar
-                );
-            }
-        #endif
 
         if (dstrect){
             ScaledDstRect = InitRect(
@@ -225,11 +194,7 @@ int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* s
                 dstrect->h * DDevice->IRScalar
             );
         }
-        #ifdef _SDL
-            return DrawEx(DDevice, texture, &ScaledSrcRect, &ScaledDstRect, flip);
-        #else
-            return DrawEx(DDevice, texture, srcrect, &ScaledDstRect, flip);
-        #endif
+        return DrawEx(DDevice, texture, srcrect, &ScaledDstRect, flip);
     }
     return 0;
 }
@@ -279,9 +244,5 @@ void SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
 
 void FinishFrame(DisplayDevice* DDevice){
     DrawFrame(DDevice);
-    #ifdef _SDL
-        SDL_Flip(DDevice->Screen);
-    #else
-        SDL_RenderPresent(DDevice->Renderer);
-    #endif
+    SDL_RenderPresent(DDevice->Renderer);
 }
