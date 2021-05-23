@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "limits.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "jukebox.h": "c"
     }
 }

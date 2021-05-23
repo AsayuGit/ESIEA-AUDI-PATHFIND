@@ -108,6 +108,15 @@ void InitCharacterLayer(DisplayDevice* DDevice, CharacterLayer** CharaLayer){
     }
 }
 
+void FreeCharacterList(CharacterList* CharaList){
+    if (CharaList){
+        FreeCharacterList(CharaList->NextCharacter);
+        free(CharaList);
+    }
+}
+
+void FreeCharacterLayer(CharacterLayer* CharaLayer);
+
 CharacterList* AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, double X, double Y, bool Flip){  /* Add a new character to a CharacterLayer */
     CharacterList** CharaList;
 

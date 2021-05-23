@@ -7,6 +7,8 @@
     void CharacterPlayAnimation(Characters* Character, int AnimationID, bool Restart);
 
     /* Character Layer Management */
+    void FreeCharacterList(CharacterList* CharaList);
+    void FreeCharacterLayer(CharacterLayer* CharaLayer);
     void InitCharacterLayer(DisplayDevice* DDevice, CharacterLayer** CharaLayer);
     CharacterList* AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, double X, double Y, bool Flip);
     void removeCharacterFromLayer(CharacterLayer* CharaLayer, const unsigned int charaInLayerID);

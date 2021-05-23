@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 
+#include "Jukebox.h"
+
 void InitSDL(){
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
         fprintf(stderr, "SDL Initialisation failed\n - %s\n", SDL_GetError());
@@ -51,8 +53,6 @@ void CreateSoundDevice(){
         fprintf(stderr, "Can't create main renderer\n - %s\n", SDL_GetError());
         exit(-1);
     }
-    /* InitJukebox(); */ /* Countains all music to be played */
-    /* return NULL; */
 }
 
 void BoundCameraToRegion(DisplayDevice* DDevice, SDL_Rect Region){

@@ -104,15 +104,17 @@ Error:
         fclose(MapFile);
 }
 
-bool IsPosValid(Map* Worldmap, int X, int Y){
+bool IsPosValid(Map* WorldMap, int X, int Y){
     IntLinkedList* List;
 
-    List = Worldmap->forbiddenTiles;
+    List = WorldMap->forbiddenTiles;
     
+    if ((X >= WorldMap->MapSizeX) || (Y >= WorldMap->MapSizeY) || (X < 0) || (Y < 0)) /* Invalid Coordinates */
+        return false;
+
     while (List){
-        if (Worldmap->MapData[Y][X] == List->data){
+        if ((WorldMap->MapData[Y][X] == List->data)) /* Invalid Tile */
             return false;
-        }
         List = (IntLinkedList*)List->next;
     }
     return true;

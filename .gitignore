@@ -51,5 +51,31 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# PDFs
+# VS Files
+.vscode/
+
+# Assets
+Assets/Dialogue/
+Assets/Fonts/
+Assets/Sound/
+Assets/Textures/
+
+xboxAssets/
+
+# Executable
+ACE
+
+# Valgrind
+vgcore.*
+
+# Visual Studio
+*.ncb
+*.suo
+
+Debug/BuildLog.htm
+Debug/
+
+# Valgrind
+vgcore*
+
 *.pdf
