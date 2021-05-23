@@ -19,49 +19,47 @@
 enum {
     MainMode,
     DebugMode,
-    AStarMode
+    AStarMode,
+    VictoryMode
 };  
 
 void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     /* Declaration */
+    SDL_Texture* CongratsTexture = NULL;
+    CharacterLayer* CharaLayer = NULL;
+    CharacterList* CharaHandle = NULL;
     Characters* MainCharacter = NULL;
     Characters* Chest = NULL;
-    CharacterList* CharaHandle = NULL;
-    CharacterList* ChestHandle[4];
-    CharacterLayer* CharaLayer = NULL;
-    Map* WorldMap = NULL;
-    bool animSet = 0;
-    int nbOfKeys;
-    const Uint8* keyState;
-    unsigned int IdleAnim = 0;
-    Uint32 oldTime, frametime, newTime = 0;
-    Vector2i PlayerMapCoordinates = {HERO_START_X, HERO_START_Y};
-    double PlayerMove = 0.0f;
     Vector2iLinkedList* path = NULL;
+    Vector2i PlayerMapCoordinates = {HERO_START_X, HERO_START_Y};
     Vector2i* potentialChest = NULL;
     Vector2i ChestArray[4];
-    unsigned int nbOfPotentialChests = 0;
+    Uint32 oldTime, frametime, newTime = 0;
+    Map* WorldMap = NULL;
+    const Uint8* keyState;
     unsigned char EventMode = MainMode;
     unsigned char i;
+    unsigned int IdleAnim = 0;
+    unsigned int nbOfPotentialChests = 0;
     unsigned int nextChest;
-    
-    srand(time(NULL));
-
+    double PlayerMove = 0.0f;
+    bool animSet = 0;
+    int nbOfKeys;
     /* Init */
+    srand(time(NULL));
     InitDebug(DDevice);
+    InitCharacterLayer(DDevice, &CharaLayer);
     
+    CongratsTexture = LoadSurface("Assets/Textures/Menus/Congrats.bmp", DDevice, 0xff00ff, SURFACE_KEYED);
     WorldMap = LoadMap(DDevice, "Assets/WorldMaps/OverWorld.txt");
     MainCharacter = InitCharacter(DDevice, "Assets/Characters/MainCharacter.xml");
     Chest = InitCharacter(DDevice, "Assets/Characters/Chest.xml");
-
-    InitCharacterLayer(DDevice, &CharaLayer);
-
     nbOfPotentialChests = FindPotentialChestLocations(WorldMap, &potentialChest);
 
     /* Chests generation */
     for (i = 0; i < 4; i++){
         nextChest = rand()%nbOfPotentialChests;
-        ChestHandle[i] = AddCharacterToLayer(CharaLayer, Chest, potentialChest[nextChest].x * TILE_SIZE, potentialChest[nextChest].y * TILE_SIZE, false);
+        AddCharacterToLayer(CharaLayer, Chest, potentialChest[nextChest].x * TILE_SIZE, potentialChest[nextChest].y * TILE_SIZE, false);
         ChestArray[i] = potentialChest[nextChest];
         /*printf("NYAN %d %d\n", ChestArray[i].x, ChestArray[i].y);*/
     }
@@ -89,14 +87,16 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                     SetDebugCursorPos(PlayerMapCoordinates);
                     break;
                 case SDL_SCANCODE_SPACE:
-                    printf("Path set !\n");
-                    if (path){
-                        FreeVector2iLinkedList(path);
-                        path = NULL;
+                    if (EventMode == MainMode){
+                        printf("Path set !\n");
+                        if (path){
+                            FreeVector2iLinkedList(path);
+                            path = NULL;
+                        }
+                        path = getPath(WorldMap, PlayerMapCoordinates, InitVector2i(16, 4));
+                        setPath(path);
+                        EventMode = AStarMode;
                     }
-                    path = getPath(WorldMap, PlayerMapCoordinates, InitVector2i(16, 4));
-                    setPath(path);
-                    EventMode = AStarMode;
                     break;
                 default:
                     break;
@@ -150,13 +150,15 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
                     }
                     nextValidPosition(&CharaHandle->Coordinates, WorldMap, +PlayerMove, 0);
                 } 
-                    
+            
+            case VictoryMode: /* Fall through */
                 if (!animSet){
                     CharacterPlayAnimation(MainCharacter, IdleAnim, false);
                     setCharacterProperty(CharaLayer, 0, true, CharaHandle->Flip);
                 }
                 CenterCameraOnPlayer(DDevice, WorldMap, CharaHandle->Coordinates);
                 break;
+            
             case AStarMode:
                 if (WallOnPath(&CharaHandle->Coordinates, PlayerMove, CharaHandle))
                     EventMode = MainMode;
@@ -173,7 +175,9 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
         /* Chest Colosions */
         for (i = 0; i < 4; i++){
             if ((ChestArray[i].x == PlayerMapCoordinates.x) && (ChestArray[i].y == PlayerMapCoordinates.y)){
-                printf("Contgrats\n");
+                EventMode = VictoryMode;
+                CharacterPlayAnimation(MainCharacter, IdleAnim, false);
+                setCharacterProperty(CharaLayer, 0, true, CharaHandle->Flip);
                 break;
             }
         }
@@ -182,6 +186,8 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
         DisplayCharacterLayer(DDevice, CharaLayer);         /* Draw the main character */
         if (EventMode == DebugMode)
             DisplayMapEditor(DDevice);
+        if (EventMode == VictoryMode)
+            SDL_RenderCopy(DDevice->Renderer, CongratsTexture, NULL, NULL);
         SDL_RenderPresent(DDevice->Renderer);
     }
     
