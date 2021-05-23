@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<character texture="./Assets/Textures/TileMap/TileMap.bmp" colorKey="0xff00ff">
+<character texture="./Assets/Textures/Characters/Chest.bmp" colorKey="0xff00ff">
     <name>Nyan</name>
     <animArray>
         <anim nbOfFrames="1" framerate="0"> <!-- Just Chest -->
