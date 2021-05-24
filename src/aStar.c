@@ -19,13 +19,45 @@
 */
 
 #include "aStar.h"
+#include "internalAStar.h"
 
-/* Placeholder function */
+/* This function is meant to wrap the internal A* algorythm to a path format
+   usable by the game engine */
 Vector2iLinkedList* getPath(Map* WorldMap, Vector2i TileStart, Vector2i TileEnd){
     Vector2iLinkedList* returnPath = NULL;
+    IntLinkedList* forbiddenTilesPointer = NULL;
+    astar_result astarResult;
+    unsigned int** BinaryMap;
+    unsigned int Y, X;
 
-    AddToVector2iLinkedList(&returnPath, TileStart);
-    AddToVector2iLinkedList(&returnPath, TileEnd);
+    /* Binary map generation */
+    BinaryMap = (unsigned int**)malloc(WorldMap->MapSizeY*sizeof(unsigned int*));
+    for (Y = 0; Y < WorldMap->MapSizeY; Y++){
+        BinaryMap[Y] = (unsigned int*)calloc(WorldMap->MapSizeX,sizeof(unsigned int));
+        for (X = 0; X < WorldMap->MapSizeX; X++){
+            forbiddenTilesPointer = WorldMap->forbiddenTiles;
+            while (forbiddenTilesPointer){
+                if (WorldMap->MapData[Y][X] == forbiddenTilesPointer->data){
+                    BinaryMap[Y][X] = 1;
+                    break;
+                }
+                forbiddenTilesPointer = (IntLinkedList*)forbiddenTilesPointer->next;
+            }
+        }
+    }
+
+    /* A* Call */
+    if (astar(BinaryMap, WorldMap->MapSizeX, WorldMap->MapSizeY, TileStart.x, TileStart.y, TileEnd.x, TileEnd.y, &astarResult)){
+        for (X = 0; X < astarResult.pathsize; X++){
+            AddToVector2iLinkedList(&returnPath, InitVector2i(astarResult.path[X].x, astarResult.path[X].y));
+        }
+    }
+
+    /* Binary Map Free */
+    for (Y = 0; Y < WorldMap->MapSizeY; Y++){
+        free(BinaryMap[Y]);
+    }
+    free(BinaryMap);
 
     return returnPath;
 }
