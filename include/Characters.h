@@ -24,7 +24,7 @@
     #include "CharactersStructures.h"
 
     Characters* InitCharacter(DisplayDevice* DDevice, char* CharacterPath);
-    void CharacterPlayAnimation(Characters* Character, int AnimationID, bool Restart);
+    void CharacterPlayAnimation(CharacterList* CharaList, int AnimationID, bool Restart);
 
     /* Character Layer Management */
     void FreeCharacterList(CharacterList* CharaList);

@@ -2,8 +2,12 @@
 <character texture="./Assets/Textures/Characters/Chest.bmp" colorKey="0xff00ff">
     <name>Nyan</name>
     <animArray>
-        <anim nbOfFrames="1" framerate="0"> <!-- Just Chest -->
+        <anim nbOfFrames="1" framerate="0"> <!-- Closed Chest -->
             <src X="0" Y="0" W="32" H="32"/>
+            <dst X="0" Y="0" W="32" H="32"/>
+        </anim>
+        <anim nbOfFrames="1" framerate="0"> <!-- Openned Chest -->
+            <src X="32" Y="0" W="32" H="32"/>
             <dst X="0" Y="0" W="32" H="32"/>
         </anim>
     </animArray>

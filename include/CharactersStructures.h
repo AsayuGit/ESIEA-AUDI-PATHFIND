@@ -47,14 +47,6 @@
         
         /* Character Texture properties */
         SDL_Texture* Surface;   /* Character Surface */
-
-        /* Background Interaction properties */
-        int* BackgroundOffset;
-
-        /* Character Animation properties */
-        Uint32 LastFrame;       /* Time at the last frame display */
-        int CurrentFrame;       /* Frame currently being displayed */
-        int PlayingAnimation;   /* The Animation currently playing */
         
         /* Character Animation */
         Animation* Anim;        /* Contains all the differents animations for a character */
@@ -62,6 +54,15 @@
 
     typedef struct CharacterList_s{
         Characters* Character;
+
+        /* Background Interaction properties */
+        int* BackgroundOffset;
+        
+        /* Character Animation properties */
+        Uint32 LastFrame;       /* Time at the last frame display */
+        int CurrentFrame;       /* Frame currently being displayed */
+        int PlayingAnimation;   /* The Animation currently playing */
+        
         Vector2d Coordinates;
         bool Flip;
         bool Shown;

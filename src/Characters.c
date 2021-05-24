@@ -113,11 +113,11 @@ Characters* InitCharacter(DisplayDevice* DDevice, char* CharacterPath){
     return LoadingCharacter;
 }
 
-void CharacterPlayAnimation(Characters* Character, int AnimationID, bool Restart){
-    if ((Character->PlayingAnimation == AnimationID) && !Restart)
+void CharacterPlayAnimation(CharacterList* CharaList, int AnimationID, bool Restart){
+    if ((CharaList->PlayingAnimation == AnimationID) && !Restart)
         return;
-    Character->PlayingAnimation = AnimationID;
-    Character->CurrentFrame = 0;
+    CharaList->PlayingAnimation = AnimationID;
+    CharaList->CurrentFrame = 0;
 }
 
 void InitCharacterLayer(DisplayDevice* DDevice, CharacterLayer** CharaLayer){
@@ -147,9 +147,8 @@ CharacterList* AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Chara
     while ((*CharaList) != NULL){
         CharaList = &((*CharaList)->NextCharacter);
     }
-    (*CharaList) = (CharacterList*)malloc(sizeof(CharacterList));
+    (*CharaList) = (CharacterList*)calloc(1, sizeof(CharacterList));
     (*CharaList)->Character = Character;
-    (*CharaList)->NextCharacter = NULL;
     (*CharaList)->Coordinates = InitVector2d(X, Y);
     (*CharaList)->Flip = Flip;
     (*CharaList)->Shown = true;
@@ -199,27 +198,27 @@ void setCharacterProperty(CharacterLayer* CharaLayer, const unsigned int charaIn
     }
 }
 
-void DisplayCharacter(DisplayDevice* DDevice, Characters* Character, SDL_Rect Viewport, Vector2d Coordinates, char Flip){ /* Display "A" Character on screen  */
+void DisplayCharacter(DisplayDevice* DDevice, CharacterList* CharaList, SDL_Rect Viewport, Vector2d Coordinates, char Flip){ /* Display "A" Character on screen  */
     SDL_Rect SpriteWindow, SpriteLayer;
 
     /* On veille a ne pas dépacer le nombre de frames de l'animation */
-    if (Character->CurrentFrame >= Character->Anim[Character->PlayingAnimation].NbOfFrames){
-        Character->CurrentFrame = 0;
+    if (CharaList->CurrentFrame >= CharaList->Character->Anim[CharaList->PlayingAnimation].NbOfFrames){
+        CharaList->CurrentFrame = 0;
     }
     
     /* On déplace la fenêtre dans la spritesheet en fonction du numéro de la frame */
-    SpriteWindow = Character->Anim[Character->PlayingAnimation].SrcRect;
-    SpriteWindow.x = Character->Anim[Character->PlayingAnimation].SrcRect.x + Character->CurrentFrame * Character->Anim[Character->PlayingAnimation].SrcRect.w;
+    SpriteWindow = CharaList->Character->Anim[CharaList->PlayingAnimation].SrcRect;
+    SpriteWindow.x = CharaList->Character->Anim[CharaList->PlayingAnimation].SrcRect.x + CharaList->CurrentFrame * CharaList->Character->Anim[CharaList->PlayingAnimation].SrcRect.w;
 
-    SpriteLayer = Character->Anim[Character->PlayingAnimation].DstRect;
-    SpriteLayer.x = Character->Anim[Character->PlayingAnimation].DstRect.x  + Coordinates.x - Viewport.x,
-    SpriteLayer.y = Character->Anim[Character->PlayingAnimation].DstRect.y + Coordinates.y - Viewport.y,
+    SpriteLayer = CharaList->Character->Anim[CharaList->PlayingAnimation].DstRect;
+    SpriteLayer.x = CharaList->Character->Anim[CharaList->PlayingAnimation].DstRect.x  + Coordinates.x - Viewport.x,
+    SpriteLayer.y = CharaList->Character->Anim[CharaList->PlayingAnimation].DstRect.y + Coordinates.y - Viewport.y,
 
-    ScaledDrawEx(DDevice, Character->Surface, &SpriteWindow, &SpriteLayer, Flip);
+    ScaledDrawEx(DDevice, CharaList->Character->Surface, &SpriteWindow, &SpriteLayer, Flip);
     
-    if (SDL_GetTicks() > Character->LastFrame + Character->Anim[Character->PlayingAnimation].Framerate){
-        Character->LastFrame = SDL_GetTicks();
-        Character->CurrentFrame++;
+    if (SDL_GetTicks() > CharaList->LastFrame + CharaList->Character->Anim[CharaList->PlayingAnimation].Framerate){
+        CharaList->LastFrame = SDL_GetTicks();
+        CharaList->CurrentFrame++;
     }
 }
 
@@ -229,7 +228,7 @@ void DisplayCharacterLayer(DisplayDevice* DDevice, CharacterLayer* CharaLayer){
     CharaList = CharaLayer->CharaList;
     while (CharaList != NULL){
         if (CharaList->Shown)
-            DisplayCharacter(DDevice, CharaList->Character, *(CharaLayer->Viewport), CharaList->Coordinates, CharaList->Flip);
+            DisplayCharacter(DDevice, CharaList, *(CharaLayer->Viewport), CharaList->Coordinates, CharaList->Flip);
         CharaList = CharaList->NextCharacter;
     }
 }

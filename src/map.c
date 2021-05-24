@@ -185,18 +185,18 @@ bool WallOnPath(Vector2d* PlayerPosition, double PlayerSpeed, CharacterList* Cha
         /* Animation */
         if (abs(Distance.y) > abs(Distance.x)){
             if (Distance.y > 0){
-                CharacterPlayAnimation(CharaHandle->Character, 3, false);
+                CharacterPlayAnimation(CharaHandle, 3, false);
                 CharaHandle->Flip = false;
             } else {
-                CharacterPlayAnimation(CharaHandle->Character, 4, false);
+                CharacterPlayAnimation(CharaHandle, 4, false);
                 CharaHandle->Flip = false;
             }
         } else {
             if (Distance.x > 0){
-                CharacterPlayAnimation(CharaHandle->Character, 5, false);
+                CharacterPlayAnimation(CharaHandle, 5, false);
                 CharaHandle->Flip = false;
             } else {
-                CharacterPlayAnimation(CharaHandle->Character, 5, false);
+                CharacterPlayAnimation(CharaHandle, 5, false);
                 CharaHandle->Flip = true;
             }
         }

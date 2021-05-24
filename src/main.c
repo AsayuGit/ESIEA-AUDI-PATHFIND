@@ -174,7 +174,7 @@ BEGIN:
 
                 if (keyState[SDL_SCANCODE_UP]){
                     if (!animSet){
-                        CharacterPlayAnimation(MainCharacter, 4, false); /* Up */
+                        CharacterPlayAnimation(CharaHandle, 4, false); /* Up */
                         animSet = true;
                         CharaHandle->Flip = false;
                         IdleAnim = 1;
@@ -182,7 +182,7 @@ BEGIN:
                     nextValidPosition(&CharaHandle->Coordinates, WorldMap, 0, -PlayerMove);
                 } else if (keyState[SDL_SCANCODE_DOWN]){
                     if (!animSet){
-                        CharacterPlayAnimation(MainCharacter, 3, false); /* Down */
+                        CharacterPlayAnimation(CharaHandle, 3, false); /* Down */
                         animSet = true;
                         CharaHandle->Flip = false;
                         IdleAnim = 0;
@@ -192,7 +192,7 @@ BEGIN:
                 
                 if (keyState[SDL_SCANCODE_LEFT]){
                     if (!animSet){
-                        CharacterPlayAnimation(MainCharacter, 5, false); /* Left */
+                        CharacterPlayAnimation(CharaHandle, 5, false); /* Left */
                         animSet = true;
                         CharaHandle->Flip = true;
                         IdleAnim = 2;
@@ -200,7 +200,7 @@ BEGIN:
                     nextValidPosition(&CharaHandle->Coordinates, WorldMap, -PlayerMove, 0);
                 } else if (keyState[SDL_SCANCODE_RIGHT]){
                     if (!animSet){
-                        CharacterPlayAnimation(MainCharacter, 5, false); /* Right */
+                        CharacterPlayAnimation(CharaHandle, 5, false); /* Right */
                         animSet = true;
                         CharaHandle->Flip = false;
                         IdleAnim = 2;
@@ -210,7 +210,7 @@ BEGIN:
             
             case VictoryMode: /* Fall through */
                 if (!animSet){
-                    CharacterPlayAnimation(MainCharacter, IdleAnim, false);
+                    CharacterPlayAnimation(CharaHandle, IdleAnim, false);
                     setCharacterProperty(CharaLayer, 0, true, CharaHandle->Flip);
                 }
                 CenterCameraOnPlayer(DDevice, WorldMap, CharaHandle->Coordinates);
@@ -236,7 +236,7 @@ BEGIN:
                     StopTrack();
                     Mix_PlayChannel(-1, Yeah, 0);
                     EventMode = VictoryMode;
-                    CharacterPlayAnimation(MainCharacter, IdleAnim, false);
+                    CharacterPlayAnimation(CharaHandle, IdleAnim, false);
                     setCharacterProperty(CharaLayer, 0, true, CharaHandle->Flip);
                     break;
                 }
