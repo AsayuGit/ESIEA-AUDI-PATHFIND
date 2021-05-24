@@ -53,6 +53,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     CharacterLayer* CharaLayer = NULL;
     CharacterLayer* ChestLayer = NULL;
     CharacterList* CharaHandle = NULL;
+    CharacterList* ChestHandle[4] = {NULL};
     Characters* MainCharacter = NULL;
     Characters* Chest = NULL;
     Vector2iLinkedList* pathArray[4] = {NULL};
@@ -62,14 +63,13 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     Uint32 oldTime, frametime, newTime = 0;
     Map* WorldMap = NULL;
     const Uint8* keyState;
-    unsigned char EventMode;
-    unsigned char i;
+    unsigned char EventMode, validChest, tempChest;
     unsigned int IdleAnim = 0;
     unsigned int nbOfPotentialChests = 0;
-    unsigned int nextChest;
+    unsigned int nextChest[4];
     double PlayerMove = 0.0f;
     bool animSet = 0;
-    int nbOfKeys;
+    int nbOfKeys, i, j;
     /* Init */
     srand(time(NULL));
     InitDebug(DDevice);
@@ -100,11 +100,26 @@ BEGIN:
     ChestLayer->CharaList = NULL;
     nbOfPotentialChests = FindPotentialChestLocations(WorldMap, &potentialChest);
     /* Chests generation */
+    validChest = rand()%4;
+
+    nextChest[0] = rand()%nbOfPotentialChests;
+    for (i = 1; i < 4; i++){
+        
+        /* générer un nouveau nombre aléatoire unique */
+        tempChest = rand()%nbOfPotentialChests;
+        for (j = 0; j < i; j++){
+            if (tempChest == nextChest[j]){
+                j = -1;
+                tempChest = rand()%nbOfPotentialChests;
+            }
+        }
+        
+        nextChest[i] = tempChest;
+    }
+
     for (i = 0; i < 4; i++){
-        nextChest = rand()%nbOfPotentialChests;
-        AddCharacterToLayer(ChestLayer, Chest, potentialChest[nextChest].x * TILE_SIZE, potentialChest[nextChest].y * TILE_SIZE, false);
-        ChestArray[i] = potentialChest[nextChest];
-        /*printf("NYAN %d %d\n", ChestArray[i].x, ChestArray[i].y);*/
+        ChestHandle[i] = AddCharacterToLayer(ChestLayer, Chest, potentialChest[nextChest[i]].x * TILE_SIZE, potentialChest[nextChest[i]].y * TILE_SIZE, false);
+        ChestArray[i] = potentialChest[nextChest[i]];
     }
     EventMode = MainMode;
 
@@ -140,9 +155,10 @@ BEGIN:
                                 FreeVector2iLinkedList(pathArray[i]);
                                 pathArray[i] = NULL;
                             }
-                            pathArray[i] = getPath(WorldMap, PlayerMapCoordinates, ChestArray[i]);
+                            if (ChestHandle[i]->PlayingAnimation == 0)
+                                pathArray[i] = getPath(WorldMap, PlayerMapCoordinates, ChestArray[i]);
                         }
-                        
+
                         setPath(GetShortestEuclidianPath(pathArray, 4));
                         EventMode = AStarMode;
                         break;
@@ -217,7 +233,7 @@ BEGIN:
                 break;
             
             case AStarMode:
-                if (WallOnPath(&CharaHandle->Coordinates, PlayerMove, CharaHandle))
+                if (WallOnPath(CharaHandle, PlayerMove, &IdleAnim))
                     EventMode = MainMode;
                 CenterCameraOnPlayer(DDevice, WorldMap, CharaHandle->Coordinates);
                 break;
@@ -233,11 +249,14 @@ BEGIN:
         if (EventMode == MainMode){
             for (i = 0; i < 4; i++){
                 if ((ChestArray[i].x == PlayerMapCoordinates.x) && (ChestArray[i].y == PlayerMapCoordinates.y)){
-                    StopTrack();
-                    Mix_PlayChannel(-1, Yeah, 0);
-                    EventMode = VictoryMode;
-                    CharacterPlayAnimation(CharaHandle, IdleAnim, false);
-                    setCharacterProperty(CharaLayer, 0, true, CharaHandle->Flip);
+                    CharacterPlayAnimation(ChestHandle[i], 1, true);
+                    if (i == validChest){
+                        StopTrack();
+                        Mix_PlayChannel(-1, Yeah, 0);
+                        EventMode = VictoryMode;
+                        CharacterPlayAnimation(CharaHandle, IdleAnim, false);
+                        setCharacterProperty(CharaLayer, 0, true, CharaHandle->Flip);
+                    }
                     break;
                 }
             }

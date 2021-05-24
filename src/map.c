@@ -26,8 +26,10 @@
 #include "Load.h"
 #include "system.h"
 #include "aStar.h"
+#include "float.h"
 
 static Vector2iLinkedList* CurrentPath;
+static bool WalkAnim = false;
 
 void FreeMap(Map* MapToFree); /* FIXME */
 
@@ -167,10 +169,11 @@ void nextValidPosition(Vector2d* PlayerPos, Map* WorldMap, double deltaX, double
 
 void setPath(Vector2iLinkedList* Path){
     CurrentPath = Path;
+    WalkAnim = true;
 }   
 
 /* Linear interpolation between two points */
-bool WallOnPath(Vector2d* PlayerPosition, double PlayerSpeed, CharacterList* CharaHandle){
+bool WallOnPath(CharacterList* CharaHandle, double PlayerSpeed, unsigned int* IdleAnim){
     Vector2d Distance; /* Vecteur direction */
     Vector2d Destination;
     double euclidianDistance;
@@ -179,26 +182,33 @@ bool WallOnPath(Vector2d* PlayerPosition, double PlayerSpeed, CharacterList* Cha
         Destination.x = (CurrentPath->data.x * TILE_SIZE) + 16;
         Destination.y = (CurrentPath->data.y * TILE_SIZE) + 16;
 
-        Distance.x = Destination.x - PlayerPosition->x;
-        Distance.y = Destination.y - PlayerPosition->y;
+        Distance.x = Destination.x - CharaHandle->Coordinates.x;
+        Distance.y = Destination.y - CharaHandle->Coordinates.y;
 
         /* Animation */
-        if (abs(Distance.y) > abs(Distance.x)){
-            if (Distance.y > 0){
-                CharacterPlayAnimation(CharaHandle, 3, false);
-                CharaHandle->Flip = false;
+        if (WalkAnim){
+            if (abs(Distance.y) > abs(Distance.x)){
+                if (Distance.y > 0){
+                    CharacterPlayAnimation(CharaHandle, 3, false);
+                    CharaHandle->Flip = false;
+                    *IdleAnim = 0;
+                } else {
+                    CharacterPlayAnimation(CharaHandle, 4, false);
+                    CharaHandle->Flip = false;
+                    *IdleAnim = 1;
+                }
             } else {
-                CharacterPlayAnimation(CharaHandle, 4, false);
-                CharaHandle->Flip = false;
+                if (Distance.x > 0){
+                    CharacterPlayAnimation(CharaHandle, 5, false);
+                    CharaHandle->Flip = false;
+                    *IdleAnim = 2;
+                } else {
+                    CharacterPlayAnimation(CharaHandle, 5, false);
+                    CharaHandle->Flip = true;
+                    *IdleAnim = 2;
+                }
             }
-        } else {
-            if (Distance.x > 0){
-                CharacterPlayAnimation(CharaHandle, 5, false);
-                CharaHandle->Flip = false;
-            } else {
-                CharacterPlayAnimation(CharaHandle, 5, false);
-                CharaHandle->Flip = true;
-            }
+            WalkAnim = false;
         }
 
         euclidianDistance = sqrt((Distance.x*Distance.x) + (Distance.y*Distance.y));
@@ -207,12 +217,13 @@ bool WallOnPath(Vector2d* PlayerPosition, double PlayerSpeed, CharacterList* Cha
         Distance.y = Distance.y / euclidianDistance * PlayerSpeed;
 
         if (euclidianDistance < PlayerSpeed){
-            PlayerPosition->x = Destination.x;
-            PlayerPosition->y = Destination.y;
+            CharaHandle->Coordinates.x = Destination.x;
+            CharaHandle->Coordinates.y = Destination.y;
             CurrentPath = (Vector2iLinkedList*)CurrentPath->next;
+            WalkAnim = true;
         } else {
-            PlayerPosition->x += Distance.x;
-            PlayerPosition->y += Distance.y;
+            CharaHandle->Coordinates.x += Distance.x;
+            CharaHandle->Coordinates.y += Distance.y;
         }
         return false;
     }
@@ -287,7 +298,7 @@ double GetEuclidianPathLength(Vector2iLinkedList* path){
     Vector2iLinkedList* lastNode;
     double length = 0.0f;
     
-    if (path){
+    if (path && path->next){
         do {
             lastNode = path;
             path = (Vector2iLinkedList*)path->next;
@@ -300,10 +311,11 @@ double GetEuclidianPathLength(Vector2iLinkedList* path){
 
 Vector2iLinkedList* GetShortestEuclidianPath(Vector2iLinkedList** pathArray, unsigned int nbOfPaths){
     unsigned int i, minPathIndex = 0;
-    double currentPathLength, minPathLength;
+    double currentPathLength, minPathLength = DBL_MAX;
 
-    minPathLength = GetEuclidianPathLength(pathArray[0]);
-    for (i = 1; i < nbOfPaths; i++){
+    for (i = 0; i < nbOfPaths; i++){
+        if (!pathArray[i])
+            continue;
         currentPathLength = GetEuclidianPathLength(pathArray[i]);
         if (currentPathLength < minPathLength){
             minPathLength = currentPathLength;
