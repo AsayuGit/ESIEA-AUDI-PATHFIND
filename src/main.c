@@ -49,6 +49,7 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     SDL_Texture* CongratsTexture = NULL;
     SDL_Rect CongratsTextureDstRect;
     Mix_Chunk* Yeah = NULL;
+    Mix_Chunk* Lock = NULL;
 
     CharacterLayer* CharaLayer = NULL;
     CharacterLayer* ChestLayer = NULL;
@@ -89,6 +90,8 @@ void mainGame(DisplayDevice* DDevice, InputDevice* IDevice){
     CharaHandle = AddCharacterToLayer(CharaLayer, MainCharacter, 0, 0, false);
 
     Yeah = Mix_LoadWAV(EffectPath[CHK_YEAH]);
+    Lock = Mix_LoadWAV(EffectPath[CHK_LOCK]);
+    Mix_VolumeChunk(Lock, 48);
 
     Mix_VolumeMusic(32);
 
@@ -249,14 +252,16 @@ BEGIN:
         if (EventMode == MainMode){
             for (i = 0; i < 4; i++){
                 if ((ChestArray[i].x == PlayerMapCoordinates.x) && (ChestArray[i].y == PlayerMapCoordinates.y)){
-                    CharacterPlayAnimation(ChestHandle[i], 1, true);
                     if (i == validChest){
                         StopTrack();
                         Mix_PlayChannel(-1, Yeah, 0);
                         EventMode = VictoryMode;
                         CharacterPlayAnimation(CharaHandle, IdleAnim, false);
                         setCharacterProperty(CharaLayer, 0, true, CharaHandle->Flip);
+                    } else if (ChestHandle[i]->PlayingAnimation == 0) {
+                        Mix_PlayChannel(-1, Lock, 0);
                     }
+                    CharacterPlayAnimation(ChestHandle[i], 1, true);
                     break;
                 }
             }

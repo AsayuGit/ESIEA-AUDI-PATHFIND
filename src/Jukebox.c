@@ -29,7 +29,8 @@ const char* MusicPath[NumberOfMusicTracks][2] = {
 };
 
 const char* EffectPath[NumberOfEffectTracks] = {
-    "Assets/Audio/SFX/Yeah.wav"
+    "Assets/Audio/SFX/Yeah.wav",
+    "Assets/Audio/SFX/Lock.wav",
 };
 
 static Mix_Music* Track_INTRO = NULL;

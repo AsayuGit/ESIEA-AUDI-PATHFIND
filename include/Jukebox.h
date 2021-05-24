@@ -28,6 +28,7 @@
 
     typedef enum{
         CHK_YEAH,
+        CHK_LOCK,
         NumberOfEffectTracks
     } EffectsPlaylistID;
 
